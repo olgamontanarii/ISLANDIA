@@ -1,6 +1,5 @@
 /* =========================================================
    DATOS DEL VIAJE · ISLANDIA 2026
-
    Este archivo contiene toda la información del viaje.
 
    Aquí guardamos:
