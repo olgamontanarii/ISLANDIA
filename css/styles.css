@@ -1228,3 +1228,47 @@ body {
   }
 
 }
+
+/* =========================================================
+   PRECIO Y PAGO DE PARKINGS
+========================================================= */
+
+.parking-details {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-top: 9px;
+}
+
+
+/* Precio y conversión aproximada */
+
+.parking-details span {
+  display: inline-block;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  background: var(--ice);
+
+  color: var(--text);
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* Forma de pago */
+
+.parking-payment {
+  display: block;
+
+  margin-top: 7px !important;
+
+  color: var(--muted);
+
+  font-size: 11px !important;
+}
