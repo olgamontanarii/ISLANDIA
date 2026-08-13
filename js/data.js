@@ -1,7 +1,8 @@
 /* =========================================================
    DATOS DEL VIAJE · ISLANDIA 2026
 
-   Este archivo es la "base de datos" de nuestra web.
+   Este archivo contiene toda la información del viaje.
+
    Aquí guardamos:
    - días
    - actividades
@@ -9,13 +10,16 @@
    - precios
    - reservas
    - parkings
-   - información práctica
+   - supermercados
    - opciones para dormir
+   - presupuesto del día
 
-   app.js se encargará de convertir estos datos en HTML.
+   app.js se encargará de representar estos datos.
 ========================================================= */
 
+
 const tripDays = [
+
   /* =======================================================
      DÍA 1 · MIÉRCOLES 9
      REYKJAVÍK + SKY LAGOON
@@ -31,15 +35,56 @@ const tripDays = [
     title: "Reykjavík + Sky Lagoon",
 
     intro:
-      "Primer día tranquilo en Islandia: recogemos la camper, hacemos la compra grande, conocemos Reykjavík y terminamos viendo caer la tarde desde Sky Lagoon.",
+      "Primer día tranquilo en Islandia: recogemos la camper, hacemos la compra grande, conocemos Reykjavík y terminamos la tarde en Sky Lagoon.",
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
+       PRESUPUESTO BASE DEL DÍA · 5 PERSONAS
+
+       De momento NO incluye:
+       - camping
+       - gasolina
+       - torre de Hallgrímskirkja
+       - comidas fuera
+
+       porque son gastos variables u opcionales.
+    ===================================================== */
+
+    budgetSummary: {
+
+      people: 5,
+
+      items: [
+
+        {
+          icon: "♨️",
+          name: "Sky Lagoon",
+          value: "74.950 ISK"
+        },
+
+        {
+          icon: "🛒",
+          name: "Compra Bónus",
+          value: "~150 €"
+        },
+
+        {
+          icon: "🅿️",
+          name: "Parking Sky Lagoon",
+          value: "GRATIS"
+        }
+
+      ],
+
+      total:
+        "74.950 ISK + ~150 €"
+
+    },
+
+
+    /* =====================================================
        ESTADÍSTICAS DEL DÍA
-
-       Algunas son todavía aproximadas.
-       Las afinaremos cuando tengamos todos los trayectos.
-    ----------------------------------------------------- */
+    ===================================================== */
 
     stats: [
 
@@ -74,7 +119,7 @@ const tripDays = [
 
 
       /* ===================================================
-         ACTIVIDAD · LLEGADA A ISLANDIA
+         ACTIVIDAD · LLEGADA
       =================================================== */
 
       {
@@ -97,20 +142,21 @@ const tripDays = [
 
           lng: -22.6056,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Keflavik+International+Airport"
 
         },
 
 
         description:
-          "Aterrizamos en Islandia, recogemos las maletas y salimos del aeropuerto sin prisas.",
+          "Aterrizamos en Islandia después del vuelo nocturno, recogemos las maletas y empezamos el viaje con tranquilidad.",
 
 
         tags: [
 
           "🧳 Recoger maletas",
 
-          "😴 Venimos de vuelo nocturno",
+          "😴 Vuelo nocturno",
 
           "🟢 Sin reserva"
 
@@ -119,11 +165,9 @@ const tripDays = [
 
         important: [
 
-          "No planificar nada importante inmediatamente después de aterrizar.",
+          "No planificar ninguna actividad con horario inmediatamente después de aterrizar.",
 
-          "Comprobar que llevamos documentación, móviles y equipaje antes de salir.",
-
-          "La prioridad del primer día es empezar el viaje tranquilos."
+          "Comprobar documentación, móviles y equipaje antes de abandonar el aeropuerto."
 
         ]
 
@@ -147,21 +191,13 @@ const tripDays = [
 
         minutes: 10,
 
-
-        /*
-          Técnicamente no será nuestro primer trayecto
-          conduciendo la camper.
-
-          Utilizamos el mismo tipo "drive" porque
-          visualmente nos interesa mostrar el desplazamiento.
-        */
-
-        mapsUrl: "#",
+        mapsUrl:
+          "https://www.google.com/maps/dir/?api=1&origin=Keflavik+International+Airport&destination=Happy+Campers+Iceland",
 
 
         roads: [
 
-          "Shuttle"
+          "Shuttle Happy Campers"
 
         ],
 
@@ -172,9 +208,9 @@ const tripDays = [
 
           "Localizar el punto de recogida indicado por Happy Campers.",
 
-          "Utilizar el shuttle de Happy Campers hasta sus instalaciones.",
+          "Utilizar el shuttle gratuito hasta las instalaciones de Happy Campers.",
 
-          "Confirmar previamente los datos de llegada con la empresa."
+          "Confirmar previamente los datos de llegada con Happy Campers."
 
         ],
 
@@ -186,7 +222,8 @@ const tripDays = [
           info:
             "Instalaciones de Happy Campers en Stapabraut 21, Reykjanesbær.",
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Happy+Campers+Stapabraut+21+Iceland"
 
         }
 
@@ -194,7 +231,7 @@ const tripDays = [
 
 
       /* ===================================================
-         ACTIVIDAD · HAPPY CAMPERS
+         ACTIVIDAD · RECOGIDA CAMPER
       =================================================== */
 
       {
@@ -217,13 +254,14 @@ const tripDays = [
 
           lng: -22.5570,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Happy+Campers+Iceland"
 
         },
 
 
         description:
-          "Recogemos la camper, hacemos el papeleo, recibimos la explicación del vehículo y organizamos el equipaje.",
+          "Hacemos el papeleo, recibimos la explicación de la camper, revisamos el vehículo y organizamos todo el equipaje.",
 
 
         tags: [
@@ -239,7 +277,7 @@ const tripDays = [
 
         important: [
 
-          "Revisar el vehículo antes de salir.",
+          "Revisar posibles daños antes de salir.",
 
           "Comprobar calefacción, gas, cocina y agua.",
 
@@ -247,7 +285,7 @@ const tripDays = [
 
           "Comprobar combustible.",
 
-          "Guardar bien todo el equipaje antes de conducir."
+          "Guardar correctamente todo el equipaje antes de conducir."
 
         ]
 
@@ -271,7 +309,8 @@ const tripDays = [
 
         minutes: 10,
 
-        mapsUrl: "#",
+        mapsUrl:
+          "https://www.google.com/maps/dir/?api=1&origin=Happy+Campers+Iceland&destination=Bonus+Fitjar+Iceland",
 
 
         roads: [
@@ -285,9 +324,9 @@ const tripDays = [
 
           "Salir de Happy Campers hacia Reykjanesbær.",
 
-          "Seguir las indicaciones hacia Fitjar.",
+          "Seguir hacia la zona comercial de Fitjar.",
 
-          "Localizar el supermercado Bónus de la zona comercial."
+          "Localizar el supermercado Bónus."
 
         ],
 
@@ -297,18 +336,23 @@ const tripDays = [
           name: "Bónus Fitjar Parking",
 
           info:
-            "Aparcamiento del supermercado. Compra grande antes de comenzar el viaje.",
+            "Parking del supermercado para hacer la compra grande.",
 
           price: {
+
             amount: 0,
+
             currency: "ISK",
+
             approxEuro: 0
+
           },
 
           payment:
-            "Gratis para clientes",
+            "Gratis",
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Bonus+Fitjar+Iceland"
 
         }
 
@@ -316,7 +360,7 @@ const tripDays = [
 
 
       /* ===================================================
-         ACTIVIDAD · COMPRA GRANDE
+         ACTIVIDAD · BÓNUS
       =================================================== */
 
       {
@@ -328,7 +372,7 @@ const tripDays = [
 
         category: "SUPERMERCADO",
 
-        title: "Compra grande en Bónus",
+        title: "Compra grande en Bónus Fitjar",
 
 
         location: {
@@ -339,18 +383,16 @@ const tripDays = [
 
           lng: -22.5560,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Bonus+Fitjar+Iceland"
 
         },
 
 
         description:
-          "Hacemos la compra principal del viaje nada más recoger la camper para no tener que preocuparnos después.",
+          "Hacemos la compra principal nada más recoger la camper para olvidarnos del supermercado durante los primeros días.",
 
 
-        /*
-          Presupuesto estimado para la compra.
-        */
         budget: {
 
           amount: 150,
@@ -362,11 +404,11 @@ const tripDays = [
 
         tags: [
 
-          "💰 Presupuesto ~150 €",
+          "💰 ~150 €",
 
-          "🟢 Sin reserva",
+          "🛒 Compra grande",
 
-          "🛒 Compra grande"
+          "🟢 Sin reserva"
 
         ],
 
@@ -383,7 +425,7 @@ const tripDays = [
 
           "2 kg de fruta",
 
-          "2 kg de yogures / skyr",
+          "2 kg de yogur / skyr",
 
           "Leche",
 
@@ -404,11 +446,13 @@ const tripDays = [
 
           "Priorizar marcas económicas.",
 
-          "No comprar agua embotellada: utilizaremos agua del grifo.",
+          "No comprar agua embotellada.",
 
-          "Si falta algo importante, Krónan está como alternativa cercana.",
+          "El agua del grifo será suficiente durante el viaje.",
 
-          "Colocar la compra correctamente en la camper antes de salir."
+          "Krónan queda como alternativa si falta algún producto.",
+
+          "Guardar toda la compra antes de arrancar."
 
         ]
 
@@ -432,7 +476,8 @@ const tripDays = [
 
         minutes: 45,
 
-        mapsUrl: "#",
+        mapsUrl:
+          "https://www.google.com/maps/dir/?api=1&origin=Bonus+Fitjar+Iceland&destination=Hallgrimskirkja+Reykjavik",
 
 
         roads: [
@@ -448,27 +493,19 @@ const tripDays = [
 
           "Continuar siempre en dirección Reykjavík.",
 
-          "Seguir la 41 hasta entrar en el área metropolitana.",
+          "Seguir la carretera 41 hasta entrar en el área metropolitana.",
 
-          "Dirigirse hacia la zona donde decidamos aparcar para comenzar el paseo."
+          "Dirigirse hacia el centro de Reykjavík."
 
         ],
 
-
-        /*
-          Aquí todavía NO fijamos el parking.
-
-          Cuando perfeccionemos Reykjavík decidiremos
-          cuál nos conviene más para dejar la camper
-          durante todo el paseo.
-        */
 
         parking: {
 
           name: "Parking Reykjavík · POR DECIDIR",
 
           info:
-            "Buscaremos un parking cómodo para dejar la camper y hacer todo el centro andando.",
+            "Elegiremos un parking cómodo para dejar la camper y realizar todo el paseo por Reykjavík andando.",
 
           mapsUrl: "#"
 
@@ -501,13 +538,14 @@ const tripDays = [
 
           lng: -21.9266,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Hallgrimskirkja+Reykjavik"
 
         },
 
 
         description:
-          "Visitamos la iglesia más reconocible de Reykjavík y, si no hay demasiada cola, subimos a la torre para ver la ciudad desde arriba.",
+          "Visitamos la iglesia más famosa de Reykjavík y, si nos apetece y no hay demasiada cola, subimos a la torre.",
 
 
         tags: [
@@ -525,9 +563,9 @@ const tripDays = [
 
           "La entrada a la iglesia es gratuita.",
 
-          "La subida a la torre es opcional y de pago.",
+          "La torre es opcional y de pago.",
 
-          "No necesitamos mover la camper para las siguientes paradas del centro."
+          "Desde aquí seguimos andando por el centro."
 
         ]
 
@@ -558,13 +596,14 @@ const tripDays = [
 
           lng: -21.9284,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Rainbow+Street+Reykjavik"
 
         },
 
 
         description:
-          "Bajamos desde Hallgrímskirkja por la conocida calle del arcoíris hacia el centro.",
+          "Bajamos andando desde Hallgrímskirkja por la calle del arcoíris hacia el centro.",
 
 
         tags: [
@@ -581,7 +620,7 @@ const tripDays = [
 
 
       /* ===================================================
-         ACTIVIDAD · LAUGAVEGUR Y CENTRO
+         ACTIVIDAD · LAUGAVEGUR
       =================================================== */
 
       {
@@ -604,13 +643,14 @@ const tripDays = [
 
           lng: -21.9290,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Laugavegur+Reykjavik"
 
         },
 
 
         description:
-          "Paseamos tranquilamente por el centro, tiendas, cafeterías y calles de Reykjavík sin convertirlo en una visita con horarios.",
+          "Paseamos por el centro, tiendas, cafeterías y calles de Reykjavík sin estar pendientes del reloj.",
 
 
         tags: [
@@ -619,7 +659,7 @@ const tripDays = [
 
           "💰 Gratis",
 
-          "☕ Parada para comer si apetece"
+          "☕ Comer si apetece"
 
         ]
 
@@ -650,13 +690,14 @@ const tripDays = [
 
           lng: -21.9328,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Harpa+Concert+Hall+Reykjavik"
 
         },
 
 
         description:
-          "Entramos al edificio de conciertos para ver su famosa fachada geométrica de cristal y el interior.",
+          "Entramos al edificio para ver la fachada geométrica de cristal y recorrer brevemente el interior.",
 
 
         tags: [
@@ -672,9 +713,9 @@ const tripDays = [
 
         important: [
 
-          "No hace falta comprar entrada para entrar al edificio.",
+          "No necesitamos entrada para visitar el interior.",
 
-          "Es una visita corta; no necesitamos reservar nada."
+          "No requiere reserva."
 
         ]
 
@@ -682,7 +723,7 @@ const tripDays = [
 
 
       /* ===================================================
-         ACTIVIDAD OPCIONAL · SUN VOYAGER
+         ACTIVIDAD · SUN VOYAGER
       =================================================== */
 
       {
@@ -696,7 +737,6 @@ const tripDays = [
 
         title: "Sun Voyager",
 
-
         optional: true,
 
 
@@ -708,13 +748,14 @@ const tripDays = [
 
           lng: -21.9222,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Sun+Voyager+Reykjavik"
 
         },
 
 
         description:
-          "Si tenemos tiempo y ganas, nos acercamos a la escultura frente al mar antes de ir a Sky Lagoon.",
+          "Parada opcional frente al mar antes de dirigirnos a Sky Lagoon.",
 
 
         tags: [
@@ -747,7 +788,8 @@ const tripDays = [
 
         minutes: 15,
 
-        mapsUrl: "#",
+        mapsUrl:
+          "https://www.google.com/maps/dir/?api=1&origin=Reykjavik&destination=Sky+Lagoon+Iceland",
 
 
         roads: [
@@ -759,13 +801,13 @@ const tripDays = [
 
         offlineDirections: [
 
-          "Salir del centro de Reykjavík hacia Kópavogur.",
+          "Salir del centro de Reykjavík en dirección Kópavogur.",
 
-          "Seguir las indicaciones hacia Kársnes.",
+          "Seguir hacia la península de Kársnes.",
 
-          "Continuar hasta Sky Lagoon.",
+          "Continuar siguiendo indicaciones hacia Sky Lagoon.",
 
-          "Aparcar en el parking del recinto."
+          "Entrar directamente al parking del recinto."
 
         ],
 
@@ -775,14 +817,26 @@ const tripDays = [
           name: "Sky Lagoon Parking",
 
           info:
-            "Parking del propio recinto de Sky Lagoon.",
+            "Parking del propio recinto de Sky Lagoon, sin límite de tiempo.",
 
-          /*
-            Dejamos el precio pendiente hasta
-            verificar específicamente las condiciones.
-          */
 
-          mapsUrl: "#"
+          price: {
+
+            amount: 0,
+
+            currency: "ISK",
+
+            approxEuro: 0
+
+          },
+
+
+          payment:
+            "Gratuito",
+
+
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Sky+Lagoon+Parking+Iceland"
 
         }
 
@@ -804,7 +858,6 @@ const tripDays = [
 
         title: "Sky Lagoon",
 
-
         featured: true,
 
 
@@ -816,55 +869,104 @@ const tripDays = [
 
           lng: -21.9521,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Sky+Lagoon+Iceland"
 
         },
 
 
         description:
-          "Nuestra experiencia termal del viaje: baño largo frente al océano, ritual y luz del atardecer.",
+          "Nuestra experiencia termal de pago del viaje: baño largo frente al océano, ritual Skjól y atardecer.",
 
+
+        /* -----------------------------------------------
+           PRECIO SKY LAGOON
+        ----------------------------------------------- */
 
         price: {
 
-          /*
-            Precio de referencia que tenemos para
-            el pase Saman.
-
-            Posteriormente comprobaremos el precio
-            exacto de nuestra fecha antes de reservar.
-          */
-
-          from: 14990,
+          amount: 14990,
 
           currency: "ISK",
 
-          perPerson: true
+          perPerson: true,
+
+          people: 5,
+
+          total: 74950
 
         },
 
+
+        /* -----------------------------------------------
+           RESERVA
+        ----------------------------------------------- */
 
         booking: {
 
           status: "recommended",
 
           advice:
-            "Esta sí la reservaría con antelación para asegurar una franja alrededor de las 17:30–18:00.",
+            "Reservar con antelación para asegurar una franja alrededor de las 17:30–18:00.",
 
-          url: "#"
+          url:
+            "https://www.skylagoon.com/booking"
+
+        },
+
+
+        /* Web oficial */
+
+        websiteUrl:
+          "https://www.skylagoon.com/",
+
+
+        /* -----------------------------------------------
+           PARKING
+        ----------------------------------------------- */
+
+        parking: {
+
+          name: "Sky Lagoon Parking",
+
+          info:
+            "Parking gratuito del propio recinto.",
+
+
+          price: {
+
+            amount: 0,
+
+            currency: "ISK",
+
+            approxEuro: 0
+
+          },
+
+
+          payment:
+            "Gratuito",
+
+
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Sky+Lagoon+Parking+Iceland"
 
         },
 
 
         tags: [
 
+          "💰 Desde 14.990 ISK/persona",
+
+          "👨‍👩‍👧‍👦 74.950 ISK / 5",
+
           "🎟️ Reservar",
 
-          "♨️ Ritual",
+          "♨️ Ritual Skjól",
 
           "🌅 Atardecer",
 
-          "⏱️ Sin prisas"
+          "🅿️ Parking gratis"
 
         ],
 
@@ -873,11 +975,13 @@ const tripDays = [
 
           "Llevar bañador.",
 
-          "El objetivo es entrar alrededor de las 17:30–18:00.",
+          "El pase Saman incluye el ritual Skjól.",
 
-          "No queremos meter otra laguna termal de pago durante el viaje.",
+          "Objetivo de entrada: 17:30–18:00.",
 
-          "Blue Lagoon y Secret Lagoon quedan fuera del itinerario."
+          "Queremos estar dentro durante la caída de la tarde.",
+
+          "Blue Lagoon y Secret Lagoon quedan fuera del viaje."
 
         ]
 
@@ -889,17 +993,14 @@ const tripDays = [
     /* =====================================================
        OPCIONES PARA DORMIR
 
-       Estas NO son tres paradas.
-
-       Elegiremos solo UNA al salir de Sky Lagoon
-       según el cansancio.
+       Al salir de Sky Lagoon elegimos SOLO UNA.
     ===================================================== */
 
     overnightOptions: [
 
 
       /* ---------------------------------------------------
-         OPCIÓN A · AGOTADOS
+         OPCIÓN A
       --------------------------------------------------- */
 
       {
@@ -908,7 +1009,7 @@ const tripDays = [
         name: "Reykjavík Eco Campsite",
 
         description:
-          "Si estamos destruidos, dormimos prácticamente en Reykjavík y dejamos Þingvellir para la mañana siguiente.",
+          "Si estamos destrozados, dormimos cerca y dejamos todo el desplazamiento hacia Þingvellir para el día siguiente.",
 
         recommended: false,
 
@@ -921,18 +1022,19 @@ const tripDays = [
 
           lng: -21.8750,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Reykjavik+Eco+Campsite"
 
         },
 
 
         tags: [
 
-          "😴 Mínimo esfuerzo",
+          "😴 Menos conducción",
 
-          "🚐 Poco trayecto",
+          "📍 Reykjavík",
 
-          "📍 Reykjavík"
+          "🚐 Cómodo"
 
         ]
 
@@ -940,7 +1042,7 @@ const tripDays = [
 
 
       /* ---------------------------------------------------
-         OPCIÓN B · NORMALES
+         OPCIÓN B
       --------------------------------------------------- */
 
       {
@@ -949,7 +1051,7 @@ const tripDays = [
         name: "Mosskógar Camping",
 
         description:
-          "Nuestra opción preferida si estamos normales: avanzamos hacia Þingvellir pero sin obligarnos a conducir hasta el parque.",
+          "Nuestra opción favorita: avanzamos hacia Þingvellir pero sin obligarnos a llegar hasta el Parque Nacional.",
 
         recommended: true,
 
@@ -962,7 +1064,8 @@ const tripDays = [
 
           lng: -21.6200,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Mosskogar+Camping+Iceland"
 
         },
 
@@ -973,7 +1076,7 @@ const tripDays = [
 
           "🚐 Avanzamos ruta",
 
-          "🌙 Más rural"
+          "🌙 Zona rural"
 
         ]
 
@@ -981,7 +1084,7 @@ const tripDays = [
 
 
       /* ---------------------------------------------------
-         OPCIÓN C · CON ENERGÍA
+         OPCIÓN C
       --------------------------------------------------- */
 
       {
@@ -990,7 +1093,7 @@ const tripDays = [
         name: "Þingvellir · Nyrðri Leirar",
 
         description:
-          "Si salimos de Sky Lagoon con energía, llegamos hasta Þingvellir y al día siguiente despertamos directamente en la primera visita.",
+          "Si todavía tenemos energía, llegamos hasta Þingvellir y al día siguiente despertamos directamente en la primera visita.",
 
         recommended: false,
 
@@ -1003,16 +1106,12 @@ const tripDays = [
 
           lng: -21.0890,
 
-          mapsUrl: "#"
+          mapsUrl:
+            "https://www.google.com/maps/search/?api=1&query=Nyrdri+Leirar+Camping+Thingvellir"
 
         },
 
 
-        /*
-          Precio de referencia que tenemos actualmente.
-
-          Lo verificaremos otra vez antes del viaje.
-        */
         price: {
 
           adult: 1800,
@@ -1058,13 +1157,8 @@ const tripDays = [
     title: "Círculo Dorado",
 
     intro:
-      "Þingvellir, Geysir y Gullfoss. Empezamos donde hayamos dormido y continuamos después hacia el sur.",
+      "Þingvellir, Geysir y Gullfoss. La hora y el punto de salida dependerán del camping elegido la noche anterior.",
 
-
-    /*
-      No ponemos todavía estadísticas porque dependerán
-      del camping elegido la noche anterior.
-    */
 
     stats: [
 
@@ -1088,9 +1182,8 @@ const tripDays = [
 
     activities: [
 
-
       /* ===================================================
-         ACTIVIDAD · ÞINGVELLIR
+         ÞINGVELLIR
       =================================================== */
 
       {
@@ -1119,7 +1212,7 @@ const tripDays = [
 
 
         description:
-          "Visitamos Þingvellir con calma pero sin alargarlo demasiado. La idea es dedicar aproximadamente una hora.",
+          "Visitamos Þingvellir durante aproximadamente una hora antes de continuar por el Círculo Dorado.",
 
 
         tags: [
@@ -1128,7 +1221,7 @@ const tripDays = [
 
           "🥾 Fácil",
 
-          "📸 Muy top"
+          "📸 Top"
 
         ],
 
@@ -1140,31 +1233,15 @@ const tripDays = [
           info:
             "Parking junto al Visitor Center y la parte alta de Almannagjá.",
 
-          /*
-            Precio pendiente de incorporar definitivamente
-            cuando hagamos la revisión real del Día 2.
-          */
-
           mapsUrl: "#"
 
-        },
-
-
-        important: [
-
-          "Llevar cortavientos.",
-
-          "Calzado impermeable recomendable.",
-
-          "No queremos dedicar 1 h 30 si con 1 h podemos hacer la visita que nos interesa."
-
-        ]
+        }
 
       },
 
 
       /* ===================================================
-         TRAYECTO · ÞINGVELLIR → GEYSIR
+         ÞINGVELLIR → GEYSIR
       =================================================== */
 
       {
@@ -1198,13 +1275,13 @@ const tripDays = [
 
         offlineDirections: [
 
-          "Salir de Þingvellir por la carretera 36.",
+          "Salir por la carretera 36.",
 
           "Continuar por la 365.",
 
-          "Pasar hacia Laugarvatn.",
+          "Seguir hacia Laugarvatn.",
 
-          "Tomar la carretera 37.",
+          "Tomar la 37.",
 
           "Continuar por la 35 hasta Geysir."
 
@@ -1216,7 +1293,7 @@ const tripDays = [
           name: "Geysir Center Parking",
 
           info:
-            "Parking junto al área de visitantes y frente a la zona geotérmica.",
+            "Parking junto al centro de visitantes.",
 
           mapsUrl: "#"
 
@@ -1226,7 +1303,7 @@ const tripDays = [
 
 
       /* ===================================================
-         ACTIVIDAD · GEYSIR
+         GEYSIR
       =================================================== */
 
       {
@@ -1255,7 +1332,7 @@ const tripDays = [
 
 
         description:
-          "Parada en la zona geotérmica para ver Strokkur y recorrer brevemente el área.",
+          "Vemos Strokkur y recorremos brevemente la zona geotérmica.",
 
 
         tags: [
@@ -1270,7 +1347,7 @@ const tripDays = [
 
 
       /* ===================================================
-         TRAYECTO · GEYSIR → GULLFOSS
+         GEYSIR → GULLFOSS
       =================================================== */
 
       {
@@ -1300,9 +1377,9 @@ const tripDays = [
 
           "Salir de Geysir por la carretera 35.",
 
-          "Continuar aproximadamente 10 km.",
+          "Continuar unos 10 km.",
 
-          "Seguir las indicaciones hacia Gullfoss."
+          "Seguir indicaciones hacia Gullfoss."
 
         ],
 
@@ -1312,7 +1389,7 @@ const tripDays = [
           name: "Gullfoss Upper Parking",
 
           info:
-            "Parking superior junto al Visitor Center y acceso a los miradores.",
+            "Parking superior junto al centro de visitantes.",
 
           mapsUrl: "#"
 
@@ -1322,7 +1399,7 @@ const tripDays = [
 
 
       /* ===================================================
-         ACTIVIDAD · GULLFOSS
+         GULLFOSS
       =================================================== */
 
       {
@@ -1351,7 +1428,7 @@ const tripDays = [
 
 
         description:
-          "Visitamos una de las grandes cascadas del Círculo Dorado antes de continuar la ruta del viaje.",
+          "Visitamos una de las cascadas más famosas de Islandia.",
 
 
         tags: [
@@ -1367,7 +1444,7 @@ const tripDays = [
 
         important: [
 
-          "Puede hacer bastante viento.",
+          "Puede haber viento.",
 
           "El suelo puede estar mojado.",
 
@@ -1383,7 +1460,7 @@ const tripDays = [
 
 
   /* =======================================================
-     DÍA 3 · VIERNES 11
+     DÍA 3
   ======================================================= */
 
   {
@@ -1406,7 +1483,7 @@ const tripDays = [
 
 
   /* =======================================================
-     DÍA 4 · SÁBADO 12
+     DÍA 4
   ======================================================= */
 
   {
@@ -1429,7 +1506,7 @@ const tripDays = [
 
 
   /* =======================================================
-     DÍA 5 · DOMINGO 13
+     DÍA 5
   ======================================================= */
 
   {
@@ -1452,7 +1529,7 @@ const tripDays = [
 
 
   /* =======================================================
-     DÍA 6 · LUNES 14
+     DÍA 6
   ======================================================= */
 
   {
