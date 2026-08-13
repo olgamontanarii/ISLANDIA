@@ -1,1 +1,1230 @@
+/* =========================================================
+   VARIABLES DE DISEÑO
+========================================================= */
 
+:root {
+  --navy: #17395f;
+  --navy-dark: #102a43;
+
+  --ice: #f5f8fa;
+  --cream: #f8f6f1;
+  --white: #ffffff;
+
+  --stone: #d8e1ea;
+  --text: #243b53;
+  --muted: #6b7785;
+
+  --aurora: #8bd3b1;
+}
+
+
+/* =========================================================
+   RESET BÁSICO
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+
+  background: var(--cream);
+  color: var(--text);
+
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================================
+   UTILIDADES
+========================================================= */
+
+.hidden {
+  display: none !important;
+}
+
+
+/* =========================================================
+   CABECERA SUPERIOR
+========================================================= */
+
+.topbar {
+  min-height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 0 28px;
+
+  background: var(--navy);
+  color: var(--white);
+}
+
+.topbar h1 {
+  margin: 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 29px;
+
+  letter-spacing: 0.2px;
+}
+
+.topbar > span {
+  font-size: 14px;
+
+  opacity: 0.9;
+}
+
+
+/* =========================================================
+   NAVEGACIÓN PRINCIPAL
+========================================================= */
+
+.days {
+  max-width: 1100px;
+
+  display: flex;
+
+  gap: 8px;
+
+  margin: 0 auto;
+
+  padding: 18px 24px 0;
+
+  overflow-x: auto;
+
+  border-bottom: 1px solid var(--stone);
+}
+
+.day {
+  position: relative;
+
+  min-width: 105px;
+
+  padding: 9px 4px 17px;
+
+  border: none;
+
+  background: transparent;
+  color: var(--muted);
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.day > span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.day small {
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+}
+
+.day.active {
+  color: var(--navy);
+}
+
+.day.active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 4px;
+  bottom: -1px;
+
+  width: 38px;
+  height: 3px;
+
+  border-radius: 3px 3px 0 0;
+
+  background: var(--navy);
+}
+
+
+/* =========================================================
+   CONTENIDO PRINCIPAL
+========================================================= */
+
+.content {
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  padding: 35px 24px 100px;
+}
+
+
+/* =========================================================
+   HERO DEL DÍA
+========================================================= */
+
+.hero {
+  position: relative;
+
+  min-height: 400px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 46px;
+
+  overflow: hidden;
+
+  border-radius: 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--navy-dark),
+      var(--navy)
+    );
+
+  color: var(--white);
+
+  box-shadow:
+    0 18px 45px rgba(16, 42, 67, 0.16);
+}
+
+.hero-content {
+  position: relative;
+
+  z-index: 2;
+
+  max-width: 720px;
+}
+
+.giant-number {
+  position: absolute;
+
+  right: -15px;
+  top: -80px;
+
+  z-index: 1;
+
+  font-family: Georgia, serif;
+
+  font-size: 390px;
+  font-weight: 700;
+
+  line-height: 1;
+
+  color: rgba(255, 255, 255, 0.055);
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.eyebrow {
+  margin: 0 0 13px;
+
+  color: var(--aurora);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 1.8px;
+}
+
+.hero h2 {
+  margin: 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: clamp(55px, 7vw, 88px);
+
+  line-height: 0.9;
+
+  letter-spacing: -2px;
+}
+
+.intro {
+  max-width: 570px;
+
+  margin: 25px 0 0;
+
+  font-family: Georgia, serif;
+
+  font-size: 19px;
+  line-height: 1.5;
+
+  color: rgba(255, 255, 255, 0.82);
+}
+
+
+/* =========================================================
+   ESTADÍSTICAS DEL DÍA
+========================================================= */
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 34px;
+}
+
+.stat {
+  min-width: 125px;
+
+  padding: 10px 15px;
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(5px);
+}
+
+.stat strong {
+  display: block;
+
+  font-family: Georgia, serif;
+
+  font-size: 18px;
+
+  color: var(--white);
+}
+
+.stat span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+
+  color: rgba(255, 255, 255, 0.65);
+}
+
+
+/* =========================================================
+   ACCIONES DEL DÍA
+========================================================= */
+
+.day-actions {
+  margin-top: 22px;
+}
+
+.day-route-button {
+  appearance: none;
+
+  padding: 11px 17px;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.10);
+  color: var(--white);
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 0.3px;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(5px);
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.day-route-button:hover {
+  transform: translateY(-2px);
+
+  background: rgba(255, 255, 255, 0.18);
+}
+
+
+/* =========================================================
+   TIMELINE
+========================================================= */
+
+.timeline-section {
+  margin-top: 60px;
+}
+
+.section-heading {
+  margin-bottom: 28px;
+}
+
+.section-heading h3 {
+  margin: 5px 0 0;
+
+  font-family: Georgia, serif;
+
+  font-size: 34px;
+
+  color: var(--navy);
+}
+
+.timeline {
+  position: relative;
+}
+
+.timeline::before {
+  content: "";
+
+  position: absolute;
+
+  top: 12px;
+  bottom: 12px;
+
+  left: 91px;
+
+  width: 1px;
+
+  background: var(--stone);
+}
+
+
+/* =========================================================
+   ACTIVIDAD
+========================================================= */
+
+.activity {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns: 70px 24px 1fr;
+
+  gap: 12px;
+
+  margin-bottom: 22px;
+}
+
+.activity-time {
+  padding-top: 18px;
+
+  text-align: right;
+
+  color: var(--navy);
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.activity-dot {
+  width: 12px;
+  height: 12px;
+
+  margin-top: 20px;
+  margin-left: 6px;
+
+  z-index: 2;
+
+  border: 3px solid var(--cream);
+  border-radius: 50%;
+
+  background: var(--aurora);
+
+  box-shadow:
+    0 0 0 1px var(--stone);
+}
+
+
+/* =========================================================
+   TARJETA DE ACTIVIDAD
+========================================================= */
+
+.activity-card {
+  padding: 23px;
+
+  border: 1px solid var(--stone);
+  border-radius: 20px;
+
+  background: var(--white);
+
+  box-shadow:
+    0 7px 22px rgba(23, 57, 95, 0.055);
+}
+
+.activity-card.featured {
+  border-color: var(--aurora);
+
+  box-shadow:
+    0 8px 25px rgba(139, 211, 177, 0.14);
+}
+
+.activity-top {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+}
+
+.activity-icon {
+  font-size: 28px;
+}
+
+.activity-label {
+  margin: 0 0 4px;
+
+  color: #69a88b;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+}
+
+.activity-card h4 {
+  margin: 0;
+
+  color: var(--navy);
+
+  font-family: Georgia, serif;
+
+  font-size: 23px;
+}
+
+.activity-description {
+  margin: 14px 0 0;
+
+  color: #596875;
+
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   ETIQUETAS
+========================================================= */
+
+.activity-tags {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-top: 16px;
+}
+
+.activity-tags span {
+  padding: 6px 10px;
+
+  border-radius: 999px;
+
+  background: var(--ice);
+
+  color: var(--text);
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   BOTONES DE ACTIVIDAD
+========================================================= */
+
+.activity-actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 18px;
+}
+
+.action-link {
+  display: inline-block;
+
+  padding: 8px 12px;
+
+  border: 1px solid var(--stone);
+  border-radius: 10px;
+
+  color: var(--navy);
+
+  text-decoration: none;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.action-link:hover {
+  transform: translateY(-1px);
+
+  background: var(--ice);
+}
+
+.action-link.primary {
+  border-color: var(--navy);
+
+  background: var(--navy);
+  color: var(--white);
+}
+
+.action-link.primary:hover {
+  background: var(--navy-dark);
+}
+
+
+/* =========================================================
+   INFORMACIÓN EXTRA DE ACTIVIDADES
+========================================================= */
+
+.activity-extra {
+  margin-top: 18px;
+
+  padding-top: 15px;
+
+  border-top: 1px solid var(--stone);
+}
+
+.activity-extra > strong {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--navy);
+
+  font-size: 12px;
+}
+
+.activity-extra p {
+  margin: 0 0 10px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.activity-extra ul {
+  margin: 7px 0 0;
+
+  padding-left: 19px;
+}
+
+.activity-extra li {
+  margin-bottom: 5px;
+
+  color: var(--text);
+
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   TRAYECTOS EN CAMPER
+========================================================= */
+
+.drive {
+  display: grid;
+
+  grid-template-columns: 94px 1fr;
+
+  gap: 12px;
+
+  margin: 8px 0 24px;
+}
+
+.drive-line {
+  position: relative;
+
+  display: flex;
+  justify-content: flex-end;
+
+  padding-right: 4px;
+}
+
+.drive-line::before {
+  content: "";
+
+  position: absolute;
+
+  right: 9px;
+
+  top: -20px;
+  bottom: -24px;
+
+  width: 1px;
+
+  background: var(--stone);
+}
+
+.drive-icon {
+  position: relative;
+
+  z-index: 2;
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--navy);
+
+  font-size: 14px;
+
+  box-shadow:
+    0 0 0 5px var(--cream);
+}
+
+.drive-card {
+  padding: 18px 20px;
+
+  border: 1px dashed rgba(23, 57, 95, 0.23);
+
+  border-radius: 17px;
+
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.drive-label {
+  margin: 0 0 5px;
+
+  color: var(--muted);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 1.4px;
+}
+
+.drive-card h4 {
+  margin: 0;
+
+  color: var(--navy);
+
+  font-family: Georgia, serif;
+
+  font-size: 20px;
+}
+
+.drive-card h4 span {
+  margin: 0 6px;
+
+  color: var(--aurora);
+}
+
+.drive-stats {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 12px;
+}
+
+.drive-stats span {
+  padding: 6px 10px;
+
+  border-radius: 999px;
+
+  background: var(--white);
+
+  color: var(--text);
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   CARRETERAS
+========================================================= */
+
+.drive-roads {
+  margin-top: 15px;
+}
+
+.drive-roads > strong {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 1px;
+}
+
+.road-number {
+  display: inline-flex;
+
+  min-width: 30px;
+
+  justify-content: center;
+
+  margin-right: 5px;
+
+  padding: 4px 7px;
+
+  border: 1px solid var(--stone);
+  border-radius: 6px;
+
+  background: var(--white);
+
+  color: var(--navy);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   PARKING
+========================================================= */
+
+.drive-parking {
+  display: flex;
+
+  gap: 10px;
+
+  align-items: baseline;
+
+  margin-top: 15px;
+
+  color: var(--text);
+
+  font-size: 12px;
+}
+
+.drive-parking > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.drive-parking > div strong {
+  color: var(--navy);
+
+  font-size: 12px;
+}
+
+.drive-parking > div span {
+  color: var(--muted);
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   BOTONES DE TRAYECTO
+========================================================= */
+
+.drive-actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 16px;
+}
+
+.drive-action {
+  appearance: none;
+
+  padding: 8px 11px;
+
+  border: 1px solid var(--stone);
+  border-radius: 9px;
+
+  background: var(--white);
+
+  color: var(--navy);
+
+  text-decoration: none;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   RUTA OFFLINE
+========================================================= */
+
+.offline-route {
+  margin-top: 17px;
+
+  padding: 17px;
+
+  border-radius: 13px;
+
+  background: var(--ice);
+}
+
+.offline-route-header {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  margin-bottom: 12px;
+}
+
+.offline-route-header strong {
+  color: var(--navy);
+
+  font-family: Georgia, serif;
+
+  font-size: 16px;
+}
+
+.offline-route-header span {
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+.offline-route ol {
+  margin: 0;
+
+  padding-left: 20px;
+}
+
+.offline-route li {
+  margin-bottom: 9px;
+
+  color: var(--text);
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   MAPA
+========================================================= */
+
+.map-section {
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  padding: 40px 24px 100px;
+}
+
+.map-header {
+  margin-bottom: 25px;
+}
+
+.map-header h2 {
+  margin: 5px 0 10px;
+
+  color: var(--navy);
+
+  font-family: Georgia, serif;
+
+  font-size: 42px;
+}
+
+.map-header > p:last-child {
+  max-width: 650px;
+
+  color: var(--muted);
+
+  line-height: 1.5;
+}
+
+#map {
+  width: 100%;
+  height: 600px;
+
+  border: 1px solid var(--stone);
+  border-radius: 24px;
+
+  background: var(--ice);
+
+  overflow: hidden;
+
+  box-shadow:
+    0 10px 30px rgba(23, 57, 95, 0.08);
+}
+
+
+/* =========================================================
+   FILTROS DEL MAPA
+========================================================= */
+
+.map-filters {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-bottom: 22px;
+}
+
+.map-filter {
+  appearance: none;
+
+  padding: 10px 16px;
+
+  border: 1px solid rgba(23, 57, 95, 0.12);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--navy);
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 0.7px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 12px rgba(23, 57, 95, 0.05);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.map-filter:hover {
+  transform: translateY(-2px);
+
+  background: var(--white);
+
+  box-shadow:
+    0 7px 18px rgba(23, 57, 95, 0.09);
+}
+
+.map-filter.active {
+  border-color: var(--navy);
+
+  background: var(--navy);
+  color: var(--white);
+
+  box-shadow:
+    0 7px 18px rgba(23, 57, 95, 0.18);
+}
+
+
+/* =========================================================
+   DÍAS VACÍOS
+========================================================= */
+
+.empty-day {
+  padding: 25px;
+
+  border: 1px dashed var(--stone);
+  border-radius: 16px;
+
+  color: var(--muted);
+
+  background: rgba(255, 255, 255, 0.4);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .topbar {
+    min-height: 64px;
+
+    padding: 10px 16px;
+  }
+
+  .topbar h1 {
+    font-size: 21px;
+  }
+
+  .topbar > span {
+    max-width: 150px;
+
+    text-align: right;
+
+    font-size: 10px;
+  }
+
+  .days {
+    padding-left: 18px;
+  }
+
+  .day {
+    min-width: 78px;
+  }
+
+  .content {
+    padding: 22px 16px 90px;
+  }
+
+  .hero {
+    min-height: 420px;
+
+    padding: 29px 24px;
+
+    border-radius: 24px;
+  }
+
+  .giant-number {
+    right: -25px;
+    top: -20px;
+
+    font-size: 245px;
+  }
+
+  .hero h2 {
+    font-size: 57px;
+  }
+
+  .intro {
+    font-size: 17px;
+  }
+
+  .stat {
+    width: calc(50% - 5px);
+
+    min-width: 0;
+  }
+
+  .timeline::before {
+    left: 13px;
+  }
+
+  .activity {
+    grid-template-columns: 27px 1fr;
+
+    gap: 8px;
+  }
+
+  .activity-time {
+    grid-column: 2;
+
+    padding: 0;
+
+    text-align: left;
+
+    font-size: 11px;
+  }
+
+  .activity-dot {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+
+    margin-left: 7px;
+    margin-top: 4px;
+  }
+
+  .activity-card {
+    grid-column: 2;
+
+    padding: 18px;
+
+    border-radius: 17px;
+  }
+
+  .section-heading h3 {
+    font-size: 29px;
+  }
+
+  .drive {
+    grid-template-columns: 27px 1fr;
+
+    gap: 8px;
+  }
+
+  .drive-line {
+    justify-content: center;
+
+    padding: 0;
+  }
+
+  .drive-line::before {
+    right: 13px;
+  }
+
+  .drive-icon {
+    width: 25px;
+    height: 25px;
+
+    font-size: 12px;
+  }
+
+  .drive-card {
+    padding: 15px;
+  }
+
+  .drive-parking {
+    flex-direction: column;
+
+    gap: 4px;
+  }
+
+  .map-section {
+    padding: 25px 16px 90px;
+  }
+
+  .map-header h2 {
+    font-size: 32px;
+  }
+
+  #map {
+    height: 520px;
+
+    border-radius: 18px;
+  }
+
+  .map-filters {
+    flex-wrap: nowrap;
+
+    overflow-x: auto;
+
+    padding-bottom: 6px;
+
+    scrollbar-width: none;
+  }
+
+  .map-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .map-filter {
+    flex-shrink: 0;
+
+    padding: 9px 14px;
+  }
+
+}
