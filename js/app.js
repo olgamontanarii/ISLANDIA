@@ -188,21 +188,79 @@ function createActivityHTML(activity) {
 
 
   /* -------------------------------------------------------
-     PARKING
+     PARKING DE LA ACTIVIDAD
+
+     Puede mostrar:
+     - nombre
+     - descripción
+     - precio
+     - forma de pago
+     - enlace directo a Maps
   ------------------------------------------------------- */
 
   const parkingHTML = activity.parking
     ? `
+
       <div class="activity-extra parking-info">
 
+        <!-- Nombre del parking -->
         <strong>
           🅿️ ${activity.parking.name || "Parking"}
         </strong>
 
+
+        <!-- Descripción -->
         <p>
           ${activity.parking.info || ""}
         </p>
 
+
+        <!-- PRECIO -->
+        ${
+          activity.parking.price
+            ? `
+
+              <div class="parking-details">
+
+                <span>
+                  💰 ${
+                    activity.parking.price.amount === 0
+                      ? "Gratis"
+                      : `${activity.parking.price.amount.toLocaleString("es-ES")} ${activity.parking.price.currency}`
+                  }
+                </span>
+
+
+                ${
+                  activity.parking.price.approxEuro > 0
+                    ? `
+                      <span>
+                        ≈ ${activity.parking.price.approxEuro} €
+                      </span>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            `
+            : ""
+        }
+
+
+        <!-- FORMA DE PAGO -->
+        ${
+          activity.parking.payment
+            ? `
+              <p class="parking-payment">
+                💳 ${activity.parking.payment}
+              </p>
+            `
+            : ""
+        }
+
+
+        <!-- MAPS -->
         ${
           activity.parking.mapsUrl &&
           activity.parking.mapsUrl !== "#"
@@ -220,6 +278,7 @@ function createActivityHTML(activity) {
         }
 
       </div>
+
     `
     : "";
 
@@ -440,25 +499,76 @@ function createDriveHTML(drive) {
 
 
   /* -------------------------------------------------------
-     PARKING AL LLEGAR
+     PARKING AL FINAL DEL TRAYECTO
   ------------------------------------------------------- */
 
   const parkingHTML = drive.parking
     ? `
+
       <div class="drive-parking">
 
         <div>
 
+          <!-- Nombre -->
           <strong>
             🅿️ ${drive.parking.name || "Parking al llegar"}
           </strong>
 
+
+          <!-- Descripción -->
           <span>
             ${drive.parking.info || ""}
           </span>
 
+
+          <!-- PRECIO -->
+          ${
+            drive.parking.price
+              ? `
+
+                <div class="parking-details">
+
+                  <span>
+                    💰 ${
+                      drive.parking.price.amount === 0
+                        ? "Gratis"
+                        : `${drive.parking.price.amount.toLocaleString("es-ES")} ${drive.parking.price.currency}`
+                    }
+                  </span>
+
+
+                  ${
+                    drive.parking.price.approxEuro > 0
+                      ? `
+                        <span>
+                          ≈ ${drive.parking.price.approxEuro} €
+                        </span>
+                      `
+                      : ""
+                  }
+
+                </div>
+
+              `
+              : ""
+          }
+
+
+          <!-- FORMA DE PAGO -->
+          ${
+            drive.parking.payment
+              ? `
+                <span class="parking-payment">
+                  💳 ${drive.parking.payment}
+                </span>
+              `
+              : ""
+          }
+
         </div>
 
+
+        <!-- MAPS -->
         ${
           drive.parking.mapsUrl &&
           drive.parking.mapsUrl !== "#"
@@ -476,6 +586,7 @@ function createDriveHTML(drive) {
         }
 
       </div>
+
     `
     : "";
 
@@ -911,9 +1022,6 @@ content.addEventListener("click", event => {
 
 /* =========================================================
    CARGA INICIAL
-
-   Al abrir la web mostramos automáticamente
-   el Día 1.
 ========================================================= */
 
 renderDay(tripDays[0]);
