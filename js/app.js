@@ -5,8 +5,8 @@ console.log("Días disponibles:", tripDays);
 /* =========================================================
    APLICACIÓN DEL ITINERARIO
 
-   data.js = datos del viaje
-   app.js  = lógica de la web
+   data.js = datos
+   app.js  = representación + interacción
 ========================================================= */
 
 
@@ -44,11 +44,14 @@ function renderDay(day) {
 
 
   /* -------------------------------------------------------
-     TIMELINE
+     PRESUPUESTO DEL DÍA
+  ------------------------------------------------------- */
 
-     Distinguimos entre:
-     - actividades
-     - trayectos
+  const budgetHTML = createBudgetSummaryHTML(day);
+
+
+  /* -------------------------------------------------------
+     TIMELINE
   ------------------------------------------------------- */
 
   const timelineHTML = (day.activities || [])
@@ -65,13 +68,21 @@ function renderDay(day) {
 
 
   /* -------------------------------------------------------
-     CONTENIDO COMPLETO DEL DÍA
+     OPCIONES PARA DORMIR
+  ------------------------------------------------------- */
+
+  const overnightHTML =
+    createOvernightOptionsHTML(day);
+
+
+  /* -------------------------------------------------------
+     CONTENIDO COMPLETO
   ------------------------------------------------------- */
 
   content.innerHTML = `
 
     <!-- =====================================
-         HERO DEL DÍA
+         HERO
     ====================================== -->
 
     <section class="hero">
@@ -98,13 +109,11 @@ function renderDay(day) {
         </p>
 
 
-        <!-- ESTADÍSTICAS -->
         <div class="stats">
           ${statsHTML}
         </div>
 
 
-        <!-- BOTÓN PARA VER LA RUTA DEL DÍA -->
         <div class="day-actions">
 
           <button
@@ -119,6 +128,13 @@ function renderDay(day) {
       </div>
 
     </section>
+
+
+    <!-- =====================================
+         PRESUPUESTO
+    ====================================== -->
+
+    ${budgetHTML}
 
 
     <!-- =====================================
@@ -155,12 +171,102 @@ function renderDay(day) {
 
     </section>
 
+
+    <!-- =====================================
+         OPCIONES PARA DORMIR
+    ====================================== -->
+
+    ${overnightHTML}
+
   `;
 }
 
 
 /* =========================================================
-   CREAR UNA ACTIVIDAD
+   PRESUPUESTO FAMILIAR
+========================================================= */
+
+function createBudgetSummaryHTML(day) {
+
+  if (!day.budgetSummary) {
+    return "";
+  }
+
+
+  const itemsHTML =
+    (day.budgetSummary.items || [])
+      .map(item => `
+
+        <div class="budget-item">
+
+          <span class="budget-icon">
+            ${item.icon || "💰"}
+          </span>
+
+          <div>
+
+            <span class="budget-name">
+              ${item.name}
+            </span>
+
+            <strong>
+              ${item.value}
+            </strong>
+
+          </div>
+
+        </div>
+
+      `)
+      .join("");
+
+
+  return `
+
+    <section class="budget-summary">
+
+      <div class="budget-heading">
+
+        <div>
+
+          <p class="eyebrow">
+            PRESUPUESTO DEL DÍA
+          </p>
+
+          <h3>
+            Familia · ${day.budgetSummary.people} personas
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <div class="budget-items">
+        ${itemsHTML}
+      </div>
+
+
+      <div class="budget-total">
+
+        <span>
+          TOTAL BASE
+        </span>
+
+        <strong>
+          ${day.budgetSummary.total}
+        </strong>
+
+      </div>
+
+    </section>
+
+  `;
+}
+
+
+/* =========================================================
+   CREAR ACTIVIDAD
 ========================================================= */
 
 function createActivityHTML(activity) {
@@ -177,154 +283,94 @@ function createActivityHTML(activity) {
 
 
   /* -------------------------------------------------------
-     INFORMACIÓN IMPORTANTE
+     IMPORTANTE
   ------------------------------------------------------- */
 
-  const importantHTML = (activity.important || [])
-    .map(item => `
-      <li>${item}</li>
-    `)
-    .join("");
+  const importantHTML =
+    (activity.important || [])
+      .map(item => `
+        <li>${item}</li>
+      `)
+      .join("");
 
 
   /* -------------------------------------------------------
-     PARKING DE LA ACTIVIDAD
-
-     Puede mostrar:
-     - nombre
-     - descripción
-     - precio
-     - forma de pago
-     - enlace directo a Maps
+     LISTA DE COMPRA
   ------------------------------------------------------- */
 
-  const parkingHTML = activity.parking
-    ? `
-
-      <div class="activity-extra parking-info">
-
-        <!-- Nombre del parking -->
-        <strong>
-          🅿️ ${activity.parking.name || "Parking"}
-        </strong>
+  const shoppingListHTML =
+    (activity.shoppingList || [])
+      .map(item => `
+        <li>${item}</li>
+      `)
+      .join("");
 
 
-        <!-- Descripción -->
-        <p>
-          ${activity.parking.info || ""}
-        </p>
+  /* -------------------------------------------------------
+     PRECIO DE ACTIVIDAD
+  ------------------------------------------------------- */
+
+  const priceHTML =
+    activity.price
+      ? createActivityPriceHTML(activity.price)
+      : "";
 
 
-        <!-- PRECIO -->
-        ${
-          activity.parking.price
-            ? `
+  /* -------------------------------------------------------
+     PARKING
+  ------------------------------------------------------- */
 
-              <div class="parking-details">
-
-                <span>
-                  💰 ${
-                    activity.parking.price.amount === 0
-                      ? "Gratis"
-                      : `${activity.parking.price.amount.toLocaleString("es-ES")} ${activity.parking.price.currency}`
-                  }
-                </span>
-
-
-                ${
-                  activity.parking.price.approxEuro > 0
-                    ? `
-                      <span>
-                        ≈ ${activity.parking.price.approxEuro} €
-                      </span>
-                    `
-                    : ""
-                }
-
-              </div>
-
-            `
-            : ""
-        }
-
-
-        <!-- FORMA DE PAGO -->
-        ${
-          activity.parking.payment
-            ? `
-              <p class="parking-payment">
-                💳 ${activity.parking.payment}
-              </p>
-            `
-            : ""
-        }
-
-
-        <!-- MAPS -->
-        ${
-          activity.parking.mapsUrl &&
-          activity.parking.mapsUrl !== "#"
-            ? `
-              <a
-                href="${activity.parking.mapsUrl}"
-                class="action-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                📍 Abrir parking en Maps
-              </a>
-            `
-            : ""
-        }
-
-      </div>
-
-    `
-    : "";
+  const parkingHTML =
+    activity.parking
+      ? createActivityParkingHTML(activity.parking)
+      : "";
 
 
   /* -------------------------------------------------------
      RESERVA
   ------------------------------------------------------- */
 
-  const bookingHTML = activity.booking
-    ? `
-      <div class="activity-extra">
+  const bookingHTML =
+    activity.booking
+      ? `
 
-        <strong>
-          🎟 Reserva
-        </strong>
+        <div class="activity-extra">
 
-        <p>
-          ${activity.booking.advice || ""}
-        </p>
+          <strong>
+            🎟 Reserva
+          </strong>
 
-        ${
-          activity.booking.url &&
-          activity.booking.url !== "#"
-            ? `
-              <a
-                href="${activity.booking.url}"
-                class="action-link primary"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                🎟 Reservar
-              </a>
-            `
-            : ""
-        }
+          <p>
+            ${activity.booking.advice || ""}
+          </p>
 
-      </div>
-    `
-    : "";
+          ${
+            activity.booking.url &&
+            activity.booking.url !== "#"
+              ? `
+                <a
+                  href="${activity.booking.url}"
+                  class="action-link primary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  🎟 Reservar
+                </a>
+              `
+              : ""
+          }
+
+        </div>
+
+      `
+      : "";
 
 
   /* -------------------------------------------------------
-     MAPS DE LA ACTIVIDAD
+     BOTONES
   ------------------------------------------------------- */
 
-  const mapsHTML =
+  const locationButton =
     activity.location &&
     activity.location.mapsUrl &&
     activity.location.mapsUrl !== "#"
@@ -341,8 +387,35 @@ function createActivityHTML(activity) {
       : "";
 
 
+  const websiteButton =
+    activity.websiteUrl &&
+    activity.websiteUrl !== "#"
+      ? `
+        <a
+          href="${activity.websiteUrl}"
+          class="action-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          🌐 Web oficial
+        </a>
+      `
+      : "";
+
+
+  const actionButtonsHTML =
+    locationButton || websiteButton
+      ? `
+        <div class="activity-actions">
+          ${locationButton}
+          ${websiteButton}
+        </div>
+      `
+      : "";
+
+
   /* -------------------------------------------------------
-     TARJETA COMPLETA
+     ACTIVIDAD COMPLETA
   ------------------------------------------------------- */
 
   return `
@@ -361,6 +434,7 @@ function createActivityHTML(activity) {
         class="
           activity-card
           ${activity.featured ? "featured" : ""}
+          ${activity.optional ? "optional" : ""}
         "
       >
 
@@ -402,11 +476,44 @@ function createActivityHTML(activity) {
         }
 
 
+        ${priceHTML}
+
+
+        ${actionButtonsHTML}
+
+
         ${
-          mapsHTML
+          activity.budget
             ? `
-              <div class="activity-actions">
-                ${mapsHTML}
+              <div class="activity-extra">
+
+                <strong>
+                  💰 Presupuesto
+                </strong>
+
+                <p>
+                  Aproximadamente ${activity.budget.amount} ${activity.budget.currency}
+                </p>
+
+              </div>
+            `
+            : ""
+        }
+
+
+        ${
+          shoppingListHTML
+            ? `
+              <div class="activity-extra shopping-list">
+
+                <strong>
+                  🛒 Lista de compra
+                </strong>
+
+                <ul>
+                  ${shoppingListHTML}
+                </ul>
+
               </div>
             `
             : ""
@@ -414,7 +521,6 @@ function createActivityHTML(activity) {
 
 
         ${parkingHTML}
-
 
         ${bookingHTML}
 
@@ -446,41 +552,174 @@ function createActivityHTML(activity) {
 
 
 /* =========================================================
-   CREAR UN TRAYECTO
+   PRECIO DE ACTIVIDAD
+========================================================= */
+
+function createActivityPriceHTML(price) {
+
+  let mainPrice = "";
+
+  let totalPrice = "";
+
+
+  if (price.from) {
+
+    mainPrice =
+      `Desde ${price.from.toLocaleString("es-ES")} ${price.currency}`;
+
+  } else if (price.amount !== undefined) {
+
+    mainPrice =
+      `${price.amount.toLocaleString("es-ES")} ${price.currency}`;
+
+  }
+
+
+  if (price.perPerson) {
+    mainPrice += " / persona";
+  }
+
+
+  if (price.total) {
+
+    totalPrice = `
+
+      <span>
+        👨‍👩‍👧‍👦 ${price.total.toLocaleString("es-ES")} ${price.currency}
+        ${price.people ? `/ ${price.people} personas` : ""}
+      </span>
+
+    `;
+
+  }
+
+
+  return `
+
+    <div class="activity-price">
+
+      <span>
+        💰 ${mainPrice}
+      </span>
+
+      ${totalPrice}
+
+    </div>
+
+  `;
+}
+
+
+/* =========================================================
+   PARKING DE ACTIVIDAD
+========================================================= */
+
+function createActivityParkingHTML(parking) {
+
+  return `
+
+    <div class="activity-extra parking-info">
+
+      <strong>
+        🅿️ ${parking.name || "Parking"}
+      </strong>
+
+
+      <p>
+        ${parking.info || ""}
+      </p>
+
+
+      ${
+        parking.price
+          ? `
+
+            <div class="parking-details">
+
+              <span>
+                💰 ${
+                  parking.price.amount === 0
+                    ? "Gratis"
+                    : `${parking.price.amount.toLocaleString("es-ES")} ${parking.price.currency}`
+                }
+              </span>
+
+              ${
+                parking.price.approxEuro > 0
+                  ? `
+                    <span>
+                      ≈ ${parking.price.approxEuro} €
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
+          `
+          : ""
+      }
+
+
+      ${
+        parking.payment
+          ? `
+            <p class="parking-payment">
+              💳 ${parking.payment}
+            </p>
+          `
+          : ""
+      }
+
+
+      ${
+        parking.mapsUrl &&
+        parking.mapsUrl !== "#"
+          ? `
+            <a
+              href="${parking.mapsUrl}"
+              class="action-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📍 Abrir parking en Maps
+            </a>
+          `
+          : ""
+      }
+
+    </div>
+
+  `;
+}
+
+
+/* =========================================================
+   CREAR TRAYECTO
 ========================================================= */
 
 function createDriveHTML(drive) {
 
-  /* -------------------------------------------------------
-     CARRETERAS
-  ------------------------------------------------------- */
-
-  const roadsHTML = (drive.roads || [])
-    .map(road => `
-      <span class="road-number">
-        ${road}
-      </span>
-    `)
-    .join("");
+  const roadsHTML =
+    (drive.roads || [])
+      .map(road => `
+        <span class="road-number">
+          ${road}
+        </span>
+      `)
+      .join("");
 
 
-  /* -------------------------------------------------------
-     INSTRUCCIONES SIN CONEXIÓN
-  ------------------------------------------------------- */
+  const directionsHTML =
+    (drive.offlineDirections || [])
+      .map((direction, index) => `
+        <li>
+          <strong>${index + 1}.</strong>
+          ${direction}
+        </li>
+      `)
+      .join("");
 
-  const directionsHTML = (drive.offlineDirections || [])
-    .map((direction, index) => `
-      <li>
-        <strong>${index + 1}.</strong>
-        ${direction}
-      </li>
-    `)
-    .join("");
-
-
-  /* -------------------------------------------------------
-     MAPS DEL TRAYECTO
-  ------------------------------------------------------- */
 
   const mapsHTML =
     drive.mapsUrl &&
@@ -498,102 +737,11 @@ function createDriveHTML(drive) {
       : "";
 
 
-  /* -------------------------------------------------------
-     PARKING AL FINAL DEL TRAYECTO
-  ------------------------------------------------------- */
+  const parkingHTML =
+    drive.parking
+      ? createDriveParkingHTML(drive.parking)
+      : "";
 
-  const parkingHTML = drive.parking
-    ? `
-
-      <div class="drive-parking">
-
-        <div>
-
-          <!-- Nombre -->
-          <strong>
-            🅿️ ${drive.parking.name || "Parking al llegar"}
-          </strong>
-
-
-          <!-- Descripción -->
-          <span>
-            ${drive.parking.info || ""}
-          </span>
-
-
-          <!-- PRECIO -->
-          ${
-            drive.parking.price
-              ? `
-
-                <div class="parking-details">
-
-                  <span>
-                    💰 ${
-                      drive.parking.price.amount === 0
-                        ? "Gratis"
-                        : `${drive.parking.price.amount.toLocaleString("es-ES")} ${drive.parking.price.currency}`
-                    }
-                  </span>
-
-
-                  ${
-                    drive.parking.price.approxEuro > 0
-                      ? `
-                        <span>
-                          ≈ ${drive.parking.price.approxEuro} €
-                        </span>
-                      `
-                      : ""
-                  }
-
-                </div>
-
-              `
-              : ""
-          }
-
-
-          <!-- FORMA DE PAGO -->
-          ${
-            drive.parking.payment
-              ? `
-                <span class="parking-payment">
-                  💳 ${drive.parking.payment}
-                </span>
-              `
-              : ""
-          }
-
-        </div>
-
-
-        <!-- MAPS -->
-        ${
-          drive.parking.mapsUrl &&
-          drive.parking.mapsUrl !== "#"
-            ? `
-              <a
-                href="${drive.parking.mapsUrl}"
-                class="drive-action"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                📍 Abrir parking
-              </a>
-            `
-            : ""
-        }
-
-      </div>
-
-    `
-    : "";
-
-
-  /* -------------------------------------------------------
-     TRAYECTO COMPLETO
-  ------------------------------------------------------- */
 
   return `
 
@@ -602,7 +750,7 @@ function createDriveHTML(drive) {
       <div class="drive-line">
 
         <span class="drive-icon">
-          🚐
+          ${drive.icon || "🚐"}
         </span>
 
       </div>
@@ -611,7 +759,7 @@ function createDriveHTML(drive) {
       <div class="drive-card">
 
         <p class="drive-label">
-          TRAYECTO EN CAMPER
+          TRAYECTO
         </p>
 
 
@@ -622,7 +770,6 @@ function createDriveHTML(drive) {
         </h4>
 
 
-        <!-- KM + TIEMPO -->
         <div class="drive-stats">
 
           <span>
@@ -636,14 +783,13 @@ function createDriveHTML(drive) {
         </div>
 
 
-        <!-- CARRETERAS -->
         ${
           roadsHTML
             ? `
               <div class="drive-roads">
 
                 <strong>
-                  Carreteras
+                  Carreteras / transporte
                 </strong>
 
                 <div>
@@ -656,11 +802,9 @@ function createDriveHTML(drive) {
         }
 
 
-        <!-- PARKING -->
         ${parkingHTML}
 
 
-        <!-- BOTONES -->
         <div class="drive-actions">
 
           ${mapsHTML}
@@ -682,7 +826,6 @@ function createDriveHTML(drive) {
         </div>
 
 
-        <!-- RUTA OFFLINE -->
         ${
           directionsHTML
             ? `
@@ -713,6 +856,296 @@ function createDriveHTML(drive) {
       </div>
 
     </article>
+
+  `;
+}
+
+
+/* =========================================================
+   PARKING DE TRAYECTO
+========================================================= */
+
+function createDriveParkingHTML(parking) {
+
+  return `
+
+    <div class="drive-parking">
+
+      <div>
+
+        <strong>
+          🅿️ ${parking.name || "Parking al llegar"}
+        </strong>
+
+        <span>
+          ${parking.info || ""}
+        </span>
+
+
+        ${
+          parking.price
+            ? `
+
+              <div class="parking-details">
+
+                <span>
+                  💰 ${
+                    parking.price.amount === 0
+                      ? "Gratis"
+                      : `${parking.price.amount.toLocaleString("es-ES")} ${parking.price.currency}`
+                  }
+                </span>
+
+                ${
+                  parking.price.approxEuro > 0
+                    ? `
+                      <span>
+                        ≈ ${parking.price.approxEuro} €
+                      </span>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            `
+            : ""
+        }
+
+
+        ${
+          parking.payment
+            ? `
+              <span class="parking-payment">
+                💳 ${parking.payment}
+              </span>
+            `
+            : ""
+        }
+
+      </div>
+
+
+      ${
+        parking.mapsUrl &&
+        parking.mapsUrl !== "#"
+          ? `
+            <a
+              href="${parking.mapsUrl}"
+              class="drive-action"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📍 Abrir parking
+            </a>
+          `
+          : ""
+      }
+
+    </div>
+
+  `;
+}
+
+
+/* =========================================================
+   OPCIONES PARA DORMIR
+========================================================= */
+
+function createOvernightOptionsHTML(day) {
+
+  if (
+    !day.overnightOptions ||
+    day.overnightOptions.length === 0
+  ) {
+    return "";
+  }
+
+
+  const optionsHTML =
+    day.overnightOptions
+      .map(option => {
+
+        const tagsHTML =
+          (option.tags || [])
+            .map(tag => `
+              <span>${tag}</span>
+            `)
+            .join("");
+
+
+        let priceHTML = "";
+
+
+        /*
+          Caso concreto de camping con precio
+          desglosado.
+        */
+        if (option.price) {
+
+          priceHTML = `
+
+            <div class="overnight-price">
+
+              ${
+                option.price.adult
+                  ? `
+                    <span>
+                      👤 ${option.price.adult.toLocaleString("es-ES")}
+                      ${option.price.currency} / adulto
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                option.price.camper
+                  ? `
+                    <span>
+                      🚐 ${option.price.camper.toLocaleString("es-ES")}
+                      ${option.price.currency} / camper
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                option.price.electricity
+                  ? `
+                    <span>
+                      ⚡ ${option.price.electricity.toLocaleString("es-ES")}
+                      ${option.price.currency}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
+          `;
+
+        }
+
+
+        const mapsButton =
+          option.location &&
+          option.location.mapsUrl &&
+          option.location.mapsUrl !== "#"
+            ? `
+              <a
+                href="${option.location.mapsUrl}"
+                class="action-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                📍 Maps
+              </a>
+            `
+            : "";
+
+
+        return `
+
+          <article
+            class="
+              overnight-option
+              ${option.recommended ? "recommended" : ""}
+            "
+          >
+
+            ${
+              option.recommended
+                ? `
+                  <div class="recommended-badge">
+                    ⭐ NUESTRA OPCIÓN
+                  </div>
+                `
+                : ""
+            }
+
+
+            <p class="overnight-mood">
+              ${option.mood}
+            </p>
+
+
+            <h4>
+              ${option.name}
+            </h4>
+
+
+            <p>
+              ${option.description}
+            </p>
+
+
+            ${
+              tagsHTML
+                ? `
+                  <div class="activity-tags">
+                    ${tagsHTML}
+                  </div>
+                `
+                : ""
+            }
+
+
+            ${priceHTML}
+
+
+            ${
+              mapsButton
+                ? `
+                  <div class="activity-actions">
+                    ${mapsButton}
+                  </div>
+                `
+                : ""
+            }
+
+          </article>
+
+        `;
+
+      })
+      .join("");
+
+
+  return `
+
+    <section class="overnight-section">
+
+      <div class="section-heading">
+
+        <p class="eyebrow">
+          FINAL DEL DÍA
+        </p>
+
+        <h3>
+          🌙 ¿Dónde dormimos?
+        </h3>
+
+        <p class="overnight-intro">
+          No hace falta decidirlo ahora.
+          Elegimos al salir de Sky Lagoon según cómo estemos.
+        </p>
+
+      </div>
+
+
+      <div class="overnight-grid">
+        ${optionsHTML}
+      </div>
+
+
+      <button
+        class="all-campsites-button"
+        type="button"
+      >
+        ⛺ Ver estas opciones en el mapa
+      </button>
+
+    </section>
 
   `;
 }
@@ -769,7 +1202,6 @@ dayButtons.forEach((button, index) => {
 
   button.addEventListener("click", () => {
 
-    /* MAPA tiene su propio evento */
     if (button.classList.contains("map-tab")) {
       return;
     }
@@ -787,15 +1219,11 @@ dayButtons.forEach((button, index) => {
     setActiveDay(button);
 
 
-    /* Ocultar mapa */
     mapSection.classList.add("hidden");
 
-
-    /* Mostrar itinerario */
     content.classList.remove("hidden");
 
 
-    /* Mostrar día seleccionado */
     renderDay(selectedDay);
 
   });
@@ -804,7 +1232,7 @@ dayButtons.forEach((button, index) => {
 
 
 /* =========================================================
-   ABRIR EL MAPA DESDE UN DÍA
+   ABRIR MAPA DESDE UN DÍA
 ========================================================= */
 
 function openDayMap(dayId) {
@@ -818,10 +1246,6 @@ function openDayMap(dayId) {
   }
 
 
-  /* -------------------------------------------------------
-     NAVEGACIÓN SUPERIOR
-  ------------------------------------------------------- */
-
   dayButtons.forEach(button => {
     button.classList.remove("active");
   });
@@ -830,18 +1254,10 @@ function openDayMap(dayId) {
   mapButton.classList.add("active");
 
 
-  /* -------------------------------------------------------
-     MOSTRAR MAPA
-  ------------------------------------------------------- */
-
   content.classList.add("hidden");
 
   mapSection.classList.remove("hidden");
 
-
-  /* -------------------------------------------------------
-     MARCAR FILTRO DEL DÍA
-  ------------------------------------------------------- */
 
   const mapFilterButtons =
     document.querySelectorAll(".map-filter");
@@ -863,10 +1279,6 @@ function openDayMap(dayId) {
   }
 
 
-  /* -------------------------------------------------------
-     DIBUJAR RUTA
-  ------------------------------------------------------- */
-
   setTimeout(() => {
 
     map.invalidateSize();
@@ -879,30 +1291,73 @@ function openDayMap(dayId) {
 
 
 /* =========================================================
-   BOTÓN SUPERIOR MAPA
+   ABRIR CAMPINGS EN EL MAPA
 ========================================================= */
 
-mapButton.addEventListener("click", () => {
+function openCampingsMap() {
 
-  /* Quitamos activo de los días */
   dayButtons.forEach(button => {
     button.classList.remove("active");
   });
 
 
-  /* Activamos MAPA */
   mapButton.classList.add("active");
 
 
-  /* Mostrar mapa */
   content.classList.add("hidden");
 
   mapSection.classList.remove("hidden");
 
 
-  /* -------------------------------------------------------
-     ACTIVAR TODO
-  ------------------------------------------------------- */
+  const filters =
+    document.querySelectorAll(".map-filter");
+
+
+  filters.forEach(button => {
+    button.classList.remove("active");
+  });
+
+
+  const campingFilter =
+    document.querySelector(
+      '.map-filter[data-map-filter="campings"]'
+    );
+
+
+  if (campingFilter) {
+    campingFilter.classList.add("active");
+  }
+
+
+  setTimeout(() => {
+
+    map.invalidateSize();
+
+    drawCampings();
+
+  }, 150);
+
+}
+
+
+/* =========================================================
+   BOTÓN SUPERIOR MAPA
+========================================================= */
+
+mapButton.addEventListener("click", () => {
+
+  dayButtons.forEach(button => {
+    button.classList.remove("active");
+  });
+
+
+  mapButton.classList.add("active");
+
+
+  content.classList.add("hidden");
+
+  mapSection.classList.remove("hidden");
+
 
   const mapFilters =
     document.querySelectorAll(".map-filter");
@@ -924,10 +1379,6 @@ mapButton.addEventListener("click", () => {
   }
 
 
-  /* -------------------------------------------------------
-     REDIBUJAR
-  ------------------------------------------------------- */
-
   setTimeout(() => {
 
     map.invalidateSize();
@@ -941,10 +1392,6 @@ mapButton.addEventListener("click", () => {
 
 /* =========================================================
    CLICS DINÁMICOS
-
-   Aquí controlamos:
-   - Ver ruta del día
-   - Abrir/cerrar ruta offline
 ========================================================= */
 
 content.addEventListener("click", event => {
@@ -964,6 +1411,22 @@ content.addEventListener("click", event => {
 
 
     openDayMap(dayId);
+
+    return;
+  }
+
+
+  /* -------------------------------------------------------
+     VER CAMPINGS EN MAPA
+  ------------------------------------------------------- */
+
+  const campsitesButton =
+    event.target.closest(".all-campsites-button");
+
+
+  if (campsitesButton) {
+
+    openCampingsMap();
 
     return;
   }
@@ -1000,11 +1463,9 @@ content.addEventListener("click", event => {
   }
 
 
-  /* Mostrar / ocultar */
   offlineRoute.classList.toggle("hidden");
 
 
-  /* Cambiar texto del botón */
   if (offlineRoute.classList.contains("hidden")) {
 
     offlineButton.textContent =
