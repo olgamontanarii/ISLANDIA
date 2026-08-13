@@ -1,19 +1,5 @@
 /* =========================================================
-   PUNTOS ÚTILES DEL VIAJE
-
-   Aquí guardamos lugares que no forman parte
-   directamente de la timeline del día.
-
-   De momento:
-   - camping de Hella
-   - supermercado Bónus de Selfoss
-
-   Más adelante podremos añadir:
-   - más campings
-   - más supermercados
-   - gasolineras
-   - piscinas
-   - duchas
+   PUNTOS ÚTILES DEL VIAJE · ISLANDIA 2026
 ========================================================= */
 
 
@@ -23,23 +9,72 @@
 
 const campsites = [
 
+  /* -------------------------------------------------------
+     OPCIÓN A · SI ESTAMOS AGOTADOS
+  ------------------------------------------------------- */
+
   {
-    name: "Hella Camping",
+    name: "Reykjavík Eco Campsite",
 
     location: {
-      lat: 63.8350,
-      lng: -20.4000
+      lat: 64.1466,
+      lng: -21.8750
     },
 
     description:
-      "Camping donde dormimos la primera noche.",
+      "Opción para la primera noche si estamos agotados después de Sky Lagoon.",
 
     tags: [
-      "🚐 Camper",
-      "🚿 Duchas",
-      "📍 Hella"
+      "😵 AGOTADOS",
+      "📍 Reykjavík",
+      "🚐 Poco trayecto"
     ]
+  },
 
+
+  /* -------------------------------------------------------
+     OPCIÓN B · RECOMENDADA
+  ------------------------------------------------------- */
+
+  {
+    name: "Mosskógar Camping",
+
+    location: {
+      lat: 64.1870,
+      lng: -21.6200
+    },
+
+    description:
+      "Nuestra opción preferida: avanzamos hacia Þingvellir sin tener que conducir hasta el parque.",
+
+    tags: [
+      "🙂 NORMALES",
+      "⭐ RECOMENDADO",
+      "🚐 Buena posición para Día 2"
+    ]
+  },
+
+
+  /* -------------------------------------------------------
+     OPCIÓN C · SI TENEMOS ENERGÍA
+  ------------------------------------------------------- */
+
+  {
+    name: "Þingvellir · Nyrðri Leirar",
+
+    location: {
+      lat: 64.2850,
+      lng: -21.0890
+    },
+
+    description:
+      "Si tenemos energía, dormimos directamente en Þingvellir y empezamos allí el Día 2.",
+
+    tags: [
+      "😎 CON ENERGÍA",
+      "⭐ Mejor posición Día 2",
+      "⚡ Electricidad opcional"
+    ]
   }
 
 ];
@@ -52,22 +87,22 @@ const campsites = [
 const supermarkets = [
 
   {
-    name: "Bónus Selfoss",
+    name: "Bónus Fitjar",
 
     location: {
-      lat: 63.9330,
-      lng: -20.9970
+      lat: 63.9980,
+      lng: -22.5560
     },
 
     description:
-      "Supermercado práctico para hacer una compra grande al principio del viaje.",
+      "Supermercado elegido para hacer la compra grande nada más recoger la camper.",
 
     tags: [
+      "🥇 NUESTRA ELECCIÓN",
       "🛒 Compra grande",
-      "💰 Económico",
-      "📍 Selfoss"
+      "💰 Presupuesto ~150 €",
+      "🕘 09:00–21:00"
     ]
-
   }
 
 ];
@@ -78,5 +113,7 @@ const supermarkets = [
 ========================================================= */
 
 console.log("✅ places.js cargado correctamente");
+
 console.log("Campings:", campsites);
+
 console.log("Supermercados:", supermarkets);
