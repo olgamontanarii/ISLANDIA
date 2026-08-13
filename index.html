@@ -1,1 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+
+  <!-- =====================================================
+       CONFIGURACIÓN GENERAL
+  ====================================================== -->
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Islandia 2026</title>
+
+
+  <!-- =====================================================
+       NUESTRO CSS
+  ====================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="./css/styles.css?v=1"
+  >
+
+
+  <!-- =====================================================
+       LEAFLET · CSS DEL MAPA
+  ====================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
+</head>
+
+
+<body>
+
+
+  <!-- =====================================================
+       CABECERA SUPERIOR
+  ====================================================== -->
+
+  <header class="topbar">
+
+    <h1>
+      🇮🇸 Islandia 2026
+    </h1>
+
+    <span>
+      9–14 SEP 2026 · familia Montanari Ferreira
+    </span>
+
+  </header>
+
+
+  <!-- =====================================================
+       NAVEGACIÓN PRINCIPAL
+
+       Aquí tenemos:
+       - Día 1
+       - Día 2
+       - ...
+       - Día 6
+       - Mapa
+  ====================================================== -->
+
+  <nav class="days">
+
+
+    <!-- DÍA 1 -->
+    <button class="day active">
+
+      <span>01</span>
+
+      <small>
+        MIÉ 9
+      </small>
+
+    </button>
+
+
+    <!-- DÍA 2 -->
+    <button class="day">
+
+      <span>02</span>
+
+      <small>
+        JUE 10
+      </small>
+
+    </button>
+
+
+    <!-- DÍA 3 -->
+    <button class="day">
+
+      <span>03</span>
+
+      <small>
+        VIE 11
+      </small>
+
+    </button>
+
+
+    <!-- DÍA 4 -->
+    <button class="day">
+
+      <span>04</span>
+
+      <small>
+        SÁB 12
+      </small>
+
+    </button>
+
+
+    <!-- DÍA 5 -->
+    <button class="day">
+
+      <span>05</span>
+
+      <small>
+        DOM 13
+      </small>
+
+    </button>
+
+
+    <!-- DÍA 6 -->
+    <button class="day">
+
+      <span>06</span>
+
+      <small>
+        LUN 14
+      </small>
+
+    </button>
+
+
+    <!-- MAPA GENERAL -->
+    <button class="day map-tab">
+
+      <span>
+        🗺️
+      </span>
+
+      <small>
+        MAPA
+      </small>
+
+    </button>
+
+  </nav>
+
+
+  <!-- =====================================================
+       SECCIÓN MAPA
+
+       Empieza oculta.
+
+       JavaScript la mostrará cuando pulsemos MAPA.
+  ====================================================== -->
+
+  <section
+    id="map-section"
+    class="map-section hidden"
+  >
+
+
+    <!-- CABECERA DEL MAPA -->
+    <div class="map-header">
+
+      <p class="eyebrow">
+        MAPA DEL VIAJE
+      </p>
+
+      <h2>
+        Islandia sobre el mapa
+      </h2>
+
+      <p>
+        Ruta del viaje, actividades, campings
+        y supermercados.
+      </p>
+
+    </div>
+
+
+    <!-- ===================================================
+         FILTROS DEL MAPA
+    ==================================================== -->
+
+    <div class="map-filters">
+
+
+      <!-- TODO EL VIAJE -->
+      <button
+        class="map-filter active"
+        data-map-filter="all"
+      >
+        TODO
+      </button>
+
+
+      <!-- DÍA 1 -->
+      <button
+        class="map-filter"
+        data-map-filter="1"
+      >
+        DÍA 1
+      </button>
+
+
+      <!-- DÍA 2 -->
+      <button
+        class="map-filter"
+        data-map-filter="2"
+      >
+        DÍA 2
+      </button>
+
+
+      <!-- DÍA 3 -->
+      <button
+        class="map-filter"
+        data-map-filter="3"
+      >
+        DÍA 3
+      </button>
+
+
+      <!-- DÍA 4 -->
+      <button
+        class="map-filter"
+        data-map-filter="4"
+      >
+        DÍA 4
+      </button>
+
+
+      <!-- DÍA 5 -->
+      <button
+        class="map-filter"
+        data-map-filter="5"
+      >
+        DÍA 5
+      </button>
+
+
+      <!-- DÍA 6 -->
+      <button
+        class="map-filter"
+        data-map-filter="6"
+      >
+        DÍA 6
+      </button>
+
+
+      <!-- CAMPINGS -->
+      <button
+        class="map-filter"
+        data-map-filter="campings"
+      >
+        ⛺ CAMPINGS
+      </button>
+
+
+      <!-- SUPERMERCADOS -->
+      <button
+        class="map-filter"
+        data-map-filter="supermarkets"
+      >
+        🛒 SUPERMERCADOS
+      </button>
+
+    </div>
+
+
+    <!-- ===================================================
+         MAPA REAL
+
+         Leaflet dibujará el mapa dentro de este div.
+    ==================================================== -->
+
+    <div id="map"></div>
+
+  </section>
+
+
+  <!-- =====================================================
+       CONTENIDO PRINCIPAL
+
+       JavaScript construirá aquí:
+       - hero del día
+       - estadísticas
+       - actividades
+       - trayectos
+  ====================================================== -->
+
+  <main class="content">
+
+    <!--
+      Lo dejamos vacío.
+
+      app.js cargará automáticamente
+      el Día 1 desde data.js.
+    -->
+
+  </main>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+
+  <!-- Leaflet tiene que cargar primero -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
+
+
+  <!-- Datos del itinerario -->
+  <script src="./js/data.js?v=1"></script>
+
+
+  <!-- Campings y supermercados -->
+  <script src="./js/places.js?v=1"></script>
+
+
+  <!-- Lógica principal -->
+  <script src="./js/app.js?v=1"></script>
+
+
+  <!-- Lógica del mapa -->
+  <script src="./js/map.js?v=1"></script>
+
+
+</body>
+
+</html>
