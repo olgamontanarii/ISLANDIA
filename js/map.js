@@ -1,27 +1,54 @@
 /* =========================================================
+   ISLANDIA 2026 · MAP.JS
+
    MAPA GENERAL DEL VIAJE
 
-   Este archivo controla:
-   - mapa Leaflet
-   - rutas por día
-   - mapa general
-   - campings
-   - supermercados
+   Utiliza:
+   - tripDays     → data.js
+   - campsites    → places.js
+   - supermarkets → places.js
+
+   FILTROS:
+   - TODO
+   - DÍA 1
+   - DÍA 2
+   - DÍA 3
+   - DÍA 4
+   - DÍA 5
+   - DÍA 6
+   - CAMPINGS
+   - SUPERMERCADOS
 ========================================================= */
+
+console.log("✅ map.js cargado correctamente");
 
 
 /* =========================================================
-   CREAR EL MAPA
+   COMPROBAR LEAFLET
 ========================================================= */
 
-const map = L.map("map").setView(
-  [64.9, -18.6],
-  6
-);
+if (typeof L === "undefined") {
+
+  console.error(
+    "❌ Leaflet no está cargado. Revisa index.html."
+  );
+
+}
 
 
 /* =========================================================
-   CAPA BASE · OPENSTREETMAP
+   CREAR MAPA
+========================================================= */
+
+const map =
+  L.map("map").setView(
+    [64.25, -19.5],
+    7
+  );
+
+
+/* =========================================================
+   CAPA BASE
 ========================================================= */
 
 L.tileLayer(
@@ -30,133 +57,225 @@ L.tileLayer(
     maxZoom: 19,
 
     attribution:
-      '&copy; OpenStreetMap contributors'
+      "&copy; OpenStreetMap contributors"
   }
 ).addTo(map);
 
 
 /* =========================================================
-   CAPA PARA NUESTROS MARCADORES Y RUTAS
+   CAPAS
 
-   Todo lo que dibujemos dinámicamente irá aquí.
-
-   Así podemos borrarlo fácilmente cuando
-   cambiamos de filtro.
+   Las separamos para poder borrar fácilmente
+   lo que haya en pantalla al cambiar de filtro.
 ========================================================= */
 
 const routeLayer =
   L.layerGroup().addTo(map);
 
+const markerLayer =
+  L.layerGroup().addTo(map);
+
+const campsiteLayer =
+  L.layerGroup().addTo(map);
+
+const supermarketLayer =
+  L.layerGroup().addTo(map);
+
 
 /* =========================================================
-   BOTONES DE FILTRO
+   ICONOS
 ========================================================= */
 
-const mapFilterButtons =
-  document.querySelectorAll(".map-filter");
+function createMapIcon(
+  emoji,
+  className = ""
+) {
 
+  return L.divIcon({
 
-/* =========================================================
-   DIBUJAR LA RUTA DE UN DÍA
-========================================================= */
+    className:
+      `custom-map-marker ${className}`,
 
-function drawDayRoute(day) {
+    html: `
+      <div class="map-marker-inner">
+        ${emoji}
+      </div>
+    `,
 
-  /* Limpiamos el mapa */
-  routeLayer.clearLayers();
+    iconSize: [38, 38],
 
+    iconAnchor: [19, 38],
 
-  /*
-    Guardamos las coordenadas de las actividades.
-
-    Los objetos type: "drive" no tienen location,
-    así que no aparecerán como marcadores.
-  */
-  const routeCoordinates = [];
-
-
-  day.activities.forEach(item => {
-
-    /* Sin coordenadas = no se puede dibujar */
-    if (!item.location) {
-      return;
-    }
-
-
-    const coordinates = [
-      item.location.lat,
-      item.location.lng
-    ];
-
-
-    routeCoordinates.push(coordinates);
-
-
-    /* =====================================================
-       MARCADOR
-    ===================================================== */
-
-    const marker =
-      L.marker(coordinates);
-
-
-    marker.bindPopup(`
-
-      <strong>
-        ${item.icon || "📍"}
-        ${item.title || item.location.name}
-      </strong>
-
-      <br>
-
-      ${item.location.name}
-
-      ${
-        item.description
-          ? `
-            <br><br>
-            ${item.description}
-          `
-          : ""
-      }
-
-    `);
-
-
-    marker.addTo(routeLayer);
+    popupAnchor: [0, -38]
 
   });
 
+}
 
-  /* =======================================================
-     LÍNEA DE LA RUTA
-  ======================================================= */
 
-  if (routeCoordinates.length >= 2) {
+/* ---------------------------------------------------------
+   ICONOS POR TIPO
+--------------------------------------------------------- */
 
-    L.polyline(
-      routeCoordinates,
-      {
-        weight: 4,
-        opacity: 0.7
-      }
-    ).addTo(routeLayer);
+const activityIcon =
+  createMapIcon(
+    "📍",
+    "activity-marker"
+  );
+
+
+const campsiteIcon =
+  createMapIcon(
+    "⛺",
+    "camping-marker"
+  );
+
+
+const supermarketIcon =
+  createMapIcon(
+    "🛒",
+    "supermarket-marker"
+  );
+
+
+/* =========================================================
+   ICONO SEGÚN ACTIVIDAD
+========================================================= */
+
+function getActivityMapIcon(activity) {
+
+  if (
+    !activity ||
+    !activity.icon
+  ) {
+
+    return activityIcon;
 
   }
 
 
-  /* =======================================================
-     ENCUADRAR AUTOMÁTICAMENTE EL DÍA
-  ======================================================= */
+  return createMapIcon(
+    activity.icon,
+    "activity-marker"
+  );
 
-  if (routeCoordinates.length > 0) {
+}
 
-    map.fitBounds(
-      routeCoordinates,
-      {
-        padding: [60, 60]
-      }
-    );
+
+/* =========================================================
+   LIMPIAR MAPA
+========================================================= */
+
+function clearMapLayers() {
+
+  routeLayer.clearLayers();
+
+  markerLayer.clearLayers();
+
+  campsiteLayer.clearLayers();
+
+  supermarketLayer.clearLayers();
+
+}
+
+
+/* =========================================================
+   UTILIDADES
+========================================================= */
+
+function escapeMapHTML(value) {
+
+  if (
+    value === undefined ||
+    value === null
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================================================
+   ENLACE MAPS PARA POPUPS
+========================================================= */
+
+function createPopupMapsLink(
+  url,
+  label = "📍 Abrir en Maps"
+) {
+
+  if (
+    !url ||
+    url === "#"
+  ) {
+
+    return "";
+
+  }
+
+
+  return `
+    <a
+      href="${url}"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="map-popup-link"
+    >
+      ${label}
+    </a>
+  `;
+
+}
+
+
+/* =========================================================
+   BADGE DE PRIORIDAD
+========================================================= */
+
+function getMapPriorityLabel(priority) {
+
+  switch (priority) {
+
+    case "fixed":
+
+      return `
+        <span class="map-popup-badge fixed">
+          ✓ FIJO
+        </span>
+      `;
+
+
+    case "optional":
+
+      return `
+        <span class="map-popup-badge optional">
+          🟡 OPCIONAL
+        </span>
+      `;
+
+
+    case "decision":
+
+      return `
+        <span class="map-popup-badge decision">
+          ❓ POR DECIDIR
+        </span>
+      `;
+
+
+    default:
+
+      return "";
 
   }
 
@@ -164,252 +283,1319 @@ function drawDayRoute(day) {
 
 
 /* =========================================================
-   DIBUJAR TODO EL VIAJE
+   POPUP ACTIVIDAD
 ========================================================= */
 
-function drawAllRoutes() {
+function createActivityPopup(
+  activity,
+  day
+) {
 
-  routeLayer.clearLayers();
-
-
-  /*
-    Todas las coordenadas de todos los días.
-  */
-  const allCoordinates = [];
-
-
-  tripDays.forEach(day => {
-
-    /*
-      Coordenadas únicamente de este día.
-    */
-    const dayCoordinates = [];
+  const priority =
+    getMapPriorityLabel(
+      activity.priority
+    );
 
 
-    day.activities.forEach(item => {
+  const description =
+    activity.description
+      ? `
+        <p class="map-popup-description">
+          ${escapeMapHTML(activity.description)}
+        </p>
+      `
+      : "";
 
-      if (!item.location) {
+
+  const time =
+    activity.time
+      ? `
+        <span class="map-popup-meta">
+          🕐 ${escapeMapHTML(activity.time)}
+        </span>
+      `
+      : "";
+
+
+  const duration =
+    activity.duration
+      ? `
+        <span class="map-popup-meta">
+          ⏱️ ${escapeMapHTML(activity.duration)}
+        </span>
+      `
+      : "";
+
+
+  return `
+
+    <div class="map-popup">
+
+      <div class="map-popup-day">
+        DÍA ${day.id}
+      </div>
+
+
+      <div class="map-popup-title-row">
+
+        <span class="map-popup-icon">
+          ${activity.icon || "📍"}
+        </span>
+
+        <div>
+
+          <small>
+            ${escapeMapHTML(
+              activity.category || ""
+            )}
+          </small>
+
+          <strong>
+            ${escapeMapHTML(
+              activity.title || ""
+            )}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      ${priority}
+
+
+      <div class="map-popup-meta-row">
+        ${time}
+        ${duration}
+      </div>
+
+
+      ${description}
+
+
+      ${
+        createPopupMapsLink(
+          activity.location?.mapsUrl
+        )
+      }
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   AÑADIR MARCADOR DE ACTIVIDAD
+========================================================= */
+
+function addActivityMarker(
+  activity,
+  day,
+  bounds
+) {
+
+  if (
+    !activity.location ||
+    activity.location.lat === undefined ||
+    activity.location.lng === undefined
+  ) {
+
+    return;
+
+  }
+
+
+  const lat =
+    Number(activity.location.lat);
+
+  const lng =
+    Number(activity.location.lng);
+
+
+  if (
+    Number.isNaN(lat) ||
+    Number.isNaN(lng)
+  ) {
+
+    return;
+
+  }
+
+
+  const marker =
+    L.marker(
+      [lat, lng],
+      {
+        icon:
+          getActivityMapIcon(activity)
+      }
+    );
+
+
+  marker.bindPopup(
+    createActivityPopup(
+      activity,
+      day
+    )
+  );
+
+
+  marker.addTo(
+    markerLayer
+  );
+
+
+  bounds.push(
+    [lat, lng]
+  );
+
+}
+
+
+/* =========================================================
+   EXTRAER COORDENADAS DE UN DÍA
+========================================================= */
+
+function getDayCoordinates(day) {
+
+  const coordinates = [];
+
+
+  (day.activities || [])
+    .forEach(item => {
+
+      if (
+        item.type !== "activity"
+      ) {
+
         return;
+
       }
 
 
-      const coordinates = [
-        item.location.lat,
-        item.location.lng
-      ];
+      if (
+        !item.location ||
+        item.location.lat === undefined ||
+        item.location.lng === undefined
+      ) {
+
+        return;
+
+      }
 
 
-      dayCoordinates.push(coordinates);
+      const lat =
+        Number(item.location.lat);
 
-      allCoordinates.push(coordinates);
-
-
-      /* ---------------------------------------------------
-         MARCADOR
-      --------------------------------------------------- */
-
-      const marker =
-        L.marker(coordinates);
+      const lng =
+        Number(item.location.lng);
 
 
-      marker.bindPopup(`
+      if (
+        Number.isNaN(lat) ||
+        Number.isNaN(lng)
+      ) {
 
-        <strong>
-          ${item.icon || "📍"}
-          ${item.title || item.location.name}
-        </strong>
+        return;
 
-        <br>
-
-        Día ${day.id}
-
-        <br>
-
-        ${item.location.name}
-
-      `);
+      }
 
 
-      marker.addTo(routeLayer);
+      coordinates.push(
+        [lat, lng]
+      );
 
     });
 
 
-    /*
-      IMPORTANTE:
+  return coordinates;
 
-      Dibujamos una línea diferente por día.
+}
 
-      Así no conectamos artificialmente el final
-      de un día con el principio del siguiente.
-    */
-    if (dayCoordinates.length >= 2) {
 
-      L.polyline(
-        dayCoordinates,
-        {
-          weight: 4,
-          opacity: 0.65
-        }
-      ).addTo(routeLayer);
+/* =========================================================
+   DIBUJAR LÍNEA DE UN DÍA
 
+   IMPORTANTE:
+
+   Es una línea visual para entender el recorrido.
+
+   NO pretende sustituir Google Maps ni representar
+   exactamente la carretera.
+========================================================= */
+
+function drawDayLine(
+  day,
+  coordinates
+) {
+
+  if (
+    coordinates.length < 2
+  ) {
+
+    return;
+
+  }
+
+
+  const polyline =
+    L.polyline(
+      coordinates,
+      {
+        weight: 4,
+        opacity: 0.65
+      }
+    );
+
+
+  polyline.bindTooltip(
+    `Día ${day.id} · ${day.title}`
+  );
+
+
+  polyline.addTo(
+    routeLayer
+  );
+
+}
+
+
+/* =========================================================
+   AJUSTAR MAPA A LOS PUNTOS
+========================================================= */
+
+function fitMapToBounds(bounds) {
+
+  if (
+    !bounds ||
+    bounds.length === 0
+  ) {
+
+    map.setView(
+      [64.25, -19.5],
+      7
+    );
+
+    return;
+
+  }
+
+
+  if (
+    bounds.length === 1
+  ) {
+
+    map.setView(
+      bounds[0],
+      12
+    );
+
+    return;
+
+  }
+
+
+  map.fitBounds(
+    bounds,
+    {
+      padding: [45, 45],
+      maxZoom: 12
     }
+  );
+
+}
+
+
+/* =========================================================
+   DIBUJAR UN DÍA
+========================================================= */
+
+function drawDayRoute(day) {
+
+  if (!day) {
+
+    return;
+
+  }
+
+
+  clearMapLayers();
+
+
+  const bounds = [];
+
+
+  /* -------------------------------------------------------
+     MARCADORES
+  ------------------------------------------------------- */
+
+  (day.activities || [])
+    .forEach(item => {
+
+      if (
+        item.type === "activity"
+      ) {
+
+        addActivityMarker(
+          item,
+          day,
+          bounds
+        );
+
+      }
+
+    });
+
+
+  /* -------------------------------------------------------
+     LÍNEA
+  ------------------------------------------------------- */
+
+  const coordinates =
+    getDayCoordinates(day);
+
+
+  drawDayLine(
+    day,
+    coordinates
+  );
+
+
+  /* -------------------------------------------------------
+     AJUSTAR VISTA
+  ------------------------------------------------------- */
+
+  fitMapToBounds(bounds);
+
+
+  console.log(
+    `🗺️ Ruta Día ${day.id}`,
+    day.title
+  );
+
+}
+
+
+/* =========================================================
+   DIBUJAR TODAS LAS RUTAS
+========================================================= */
+
+function drawAllRoutes() {
+
+  clearMapLayers();
+
+
+  const bounds = [];
+
+
+  tripDays.forEach(day => {
+
+    const dayCoordinates = [];
+
+
+    (day.activities || [])
+      .forEach(item => {
+
+        if (
+          item.type !== "activity"
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          !item.location ||
+          item.location.lat === undefined ||
+          item.location.lng === undefined
+        ) {
+
+          return;
+
+        }
+
+
+        addActivityMarker(
+          item,
+          day,
+          bounds
+        );
+
+
+        dayCoordinates.push([
+          Number(item.location.lat),
+          Number(item.location.lng)
+        ]);
+
+      });
+
+
+    drawDayLine(
+      day,
+      dayCoordinates
+    );
 
   });
 
 
-  /* Encuadrar todo el viaje */
-  if (allCoordinates.length > 0) {
+  fitMapToBounds(bounds);
 
-    map.fitBounds(
-      allCoordinates,
+
+  console.log(
+    "🗺️ Mostrando todas las rutas"
+  );
+
+}
+
+
+/* =========================================================
+   POPUP CAMPING
+========================================================= */
+
+function createCampsitePopup(campsite) {
+
+  const tags =
+    (campsite.tags || [])
+      .map(tag => `
+        <span class="map-popup-tag">
+          ${escapeMapHTML(tag)}
+        </span>
+      `)
+      .join("");
+
+
+  let priceHTML = "";
+
+
+  if (campsite.price) {
+
+    const adultISK =
+      campsite.price.adultISK;
+
+    const adultEUR =
+      campsite.price.adultEUR;
+
+
+    if (
+      adultISK !== undefined
+    ) {
+
+      priceHTML = `
+
+        <div class="map-popup-price">
+
+          💰
+
+          ${
+            adultEUR !== undefined
+              ? `≈ ${adultEUR} € / adulto`
+              : `${adultISK} ISK / adulto`
+          }
+
+          ${
+            adultEUR !== undefined
+              ? `
+                <small>
+                  ${adultISK.toLocaleString("es-ES")} ISK
+                </small>
+              `
+              : ""
+          }
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+
+  return `
+
+    <div class="map-popup campsite-popup">
+
+      <div class="map-popup-day">
+        NOCHE ${campsite.day}
+      </div>
+
+
+      <div class="map-popup-title-row">
+
+        <span class="map-popup-icon">
+          ⛺
+        </span>
+
+        <div>
+
+          <small>
+            ${escapeMapHTML(
+              campsite.area || ""
+            )}
+          </small>
+
+          <strong>
+            ${escapeMapHTML(
+              campsite.name
+            )}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      ${
+        campsite.recommended
+          ? `
+            <span class="map-popup-badge recommended">
+              ⭐ RECOMENDADO
+            </span>
+          `
+          : ""
+      }
+
+
+      ${
+        campsite.description
+          ? `
+            <p class="map-popup-description">
+              ${escapeMapHTML(
+                campsite.description
+              )}
+            </p>
+          `
+          : ""
+      }
+
+
+      ${priceHTML}
+
+
+      ${
+        tags
+          ? `
+            <div class="map-popup-tags">
+              ${tags}
+            </div>
+          `
+          : ""
+      }
+
+
+      ${
+        campsite.warning
+          ? `
+            <div class="map-popup-warning">
+              ⚠️ ${escapeMapHTML(
+                campsite.warning
+              )}
+            </div>
+          `
+          : ""
+      }
+
+
+      ${
+        createPopupMapsLink(
+          campsite.mapsUrl,
+          "📍 Abrir camping en Maps"
+        )
+      }
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   AÑADIR CAMPING
+========================================================= */
+
+function addCampsiteMarker(
+  campsite,
+  bounds
+) {
+
+  if (
+    !campsite.location ||
+    campsite.location.lat === undefined ||
+    campsite.location.lng === undefined
+  ) {
+
+    return;
+
+  }
+
+
+  const lat =
+    Number(
+      campsite.location.lat
+    );
+
+  const lng =
+    Number(
+      campsite.location.lng
+    );
+
+
+  if (
+    Number.isNaN(lat) ||
+    Number.isNaN(lng)
+  ) {
+
+    return;
+
+  }
+
+
+  const marker =
+    L.marker(
+      [lat, lng],
       {
-        padding: [50, 50]
+        icon: campsiteIcon
       }
     );
 
-  }
+
+  marker.bindPopup(
+    createCampsitePopup(
+      campsite
+    )
+  );
+
+
+  marker.addTo(
+    campsiteLayer
+  );
+
+
+  bounds.push(
+    [lat, lng]
+  );
 
 }
 
 
 /* =========================================================
    DIBUJAR CAMPINGS
+
+   dayId es opcional.
+
+   drawCampings()
+   → todos
+
+   drawCampings(1)
+   → campings Noche 1
 ========================================================= */
 
-function drawCampings() {
+function drawCampings(dayId = null) {
 
-  routeLayer.clearLayers();
-
-
-  const coordinates = [];
+  clearMapLayers();
 
 
-  campsites.forEach(camping => {
-
-    const point = [
-      camping.location.lat,
-      camping.location.lng
-    ];
+  const bounds = [];
 
 
-    coordinates.push(point);
+  if (
+    typeof campsites === "undefined"
+  ) {
+
+    console.error(
+      "❌ campsites no existe. Revisa places.js."
+    );
+
+    return;
+
+  }
 
 
-    const marker =
-      L.marker(point);
+  const selectedCampsites =
+    dayId
+      ? campsites.filter(
+          campsite =>
+            campsite.day === dayId
+        )
+      : campsites;
 
 
-    marker.bindPopup(`
+  selectedCampsites.forEach(
+    campsite => {
 
-      <strong>
-        ⛺ ${camping.name}
-      </strong>
+      addCampsiteMarker(
+        campsite,
+        bounds
+      );
 
-      <br><br>
+    }
+  );
 
-      ${camping.description}
+
+  fitMapToBounds(bounds);
+
+
+  console.log(
+    "⛺ Campings mostrados:",
+    selectedCampsites.length
+  );
+
+}
+
+
+/* =========================================================
+   POPUP SUPERMERCADO
+========================================================= */
+
+function createSupermarketPopup(
+  supermarket
+) {
+
+  const tags =
+    (supermarket.tags || [])
+      .map(tag => `
+        <span class="map-popup-tag">
+          ${escapeMapHTML(tag)}
+        </span>
+      `)
+      .join("");
+
+
+  return `
+
+    <div class="map-popup supermarket-popup">
+
+      <div class="map-popup-day">
+        DÍA ${supermarket.day}
+      </div>
+
+
+      <div class="map-popup-title-row">
+
+        <span class="map-popup-icon">
+          🛒
+        </span>
+
+        <div>
+
+          <small>
+            ${escapeMapHTML(
+              supermarket.chain || ""
+            )}
+            ·
+            ${escapeMapHTML(
+              supermarket.area || ""
+            )}
+          </small>
+
+          <strong>
+            ${escapeMapHTML(
+              supermarket.name
+            )}
+          </strong>
+
+        </div>
+
+      </div>
+
 
       ${
-        camping.tags &&
-        camping.tags.length > 0
+        supermarket.recommended
           ? `
-            <br><br>
-            ${camping.tags.join("<br>")}
+            <span class="map-popup-badge recommended">
+              ⭐ RECOMENDADO
+            </span>
           `
           : ""
       }
 
-    `);
+
+      ${
+        supermarket.role
+          ? `
+            <div class="map-popup-role">
+              ${escapeMapHTML(
+                supermarket.role
+              )}
+            </div>
+          `
+          : ""
+      }
 
 
-    marker.addTo(routeLayer);
+      ${
+        supermarket.description
+          ? `
+            <p class="map-popup-description">
+              ${escapeMapHTML(
+                supermarket.description
+              )}
+            </p>
+          `
+          : ""
+      }
 
-  });
+
+      ${
+        tags
+          ? `
+            <div class="map-popup-tags">
+              ${tags}
+            </div>
+          `
+          : ""
+      }
 
 
-  /*
-    maxZoom evita que, si solo hay un camping,
-    Leaflet haga un zoom exageradamente cercano.
-  */
-  if (coordinates.length > 0) {
+      ${
+        createPopupMapsLink(
+          supermarket.mapsUrl,
+          "📍 Abrir supermercado en Maps"
+        )
+      }
 
-    map.fitBounds(
-      coordinates,
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   AÑADIR SUPERMERCADO
+========================================================= */
+
+function addSupermarketMarker(
+  supermarket,
+  bounds
+) {
+
+  if (
+    !supermarket.location ||
+    supermarket.location.lat === undefined ||
+    supermarket.location.lng === undefined
+  ) {
+
+    return;
+
+  }
+
+
+  const lat =
+    Number(
+      supermarket.location.lat
+    );
+
+  const lng =
+    Number(
+      supermarket.location.lng
+    );
+
+
+  if (
+    Number.isNaN(lat) ||
+    Number.isNaN(lng)
+  ) {
+
+    return;
+
+  }
+
+
+  const marker =
+    L.marker(
+      [lat, lng],
       {
-        padding: [60, 60],
-        maxZoom: 11
+        icon: supermarketIcon
       }
     );
 
-  }
+
+  marker.bindPopup(
+    createSupermarketPopup(
+      supermarket
+    )
+  );
+
+
+  marker.addTo(
+    supermarketLayer
+  );
+
+
+  bounds.push(
+    [lat, lng]
+  );
 
 }
 
 
 /* =========================================================
    DIBUJAR SUPERMERCADOS
+
+   dayId opcional.
 ========================================================= */
 
-function drawSupermarkets() {
+function drawSupermarkets(
+  dayId = null
+) {
 
-  routeLayer.clearLayers();
-
-
-  const coordinates = [];
-
-
-  supermarkets.forEach(supermarket => {
-
-    const point = [
-      supermarket.location.lat,
-      supermarket.location.lng
-    ];
+  clearMapLayers();
 
 
-    coordinates.push(point);
+  const bounds = [];
 
 
-    const marker =
-      L.marker(point);
+  if (
+    typeof supermarkets === "undefined"
+  ) {
+
+    console.error(
+      "❌ supermarkets no existe. Revisa places.js."
+    );
+
+    return;
+
+  }
 
 
-    marker.bindPopup(`
-
-      <strong>
-        🛒 ${supermarket.name}
-      </strong>
-
-      <br><br>
-
-      ${supermarket.description}
-
-      ${
-        supermarket.tags &&
-        supermarket.tags.length > 0
-          ? `
-            <br><br>
-            ${supermarket.tags.join("<br>")}
-          `
-          : ""
-      }
-
-    `);
+  const selectedSupermarkets =
+    dayId
+      ? supermarkets.filter(
+          supermarket =>
+            supermarket.day === dayId
+        )
+      : supermarkets;
 
 
-    marker.addTo(routeLayer);
+  selectedSupermarkets.forEach(
+    supermarket => {
+
+      addSupermarketMarker(
+        supermarket,
+        bounds
+      );
+
+    }
+  );
+
+
+  fitMapToBounds(bounds);
+
+
+  console.log(
+    "🛒 Supermercados mostrados:",
+    selectedSupermarkets.length
+  );
+
+}
+
+
+/* =========================================================
+   DIBUJAR TODO
+
+   Incluye:
+
+   - rutas de todos los días
+   - actividades
+   - campings
+   - supermercados
+========================================================= */
+
+function drawEverything() {
+
+  clearMapLayers();
+
+
+  const bounds = [];
+
+
+  /* -------------------------------------------------------
+     ACTIVIDADES + RUTAS
+  ------------------------------------------------------- */
+
+  tripDays.forEach(day => {
+
+    const dayCoordinates = [];
+
+
+    (day.activities || [])
+      .forEach(item => {
+
+        if (
+          item.type !== "activity"
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          !item.location ||
+          item.location.lat === undefined ||
+          item.location.lng === undefined
+        ) {
+
+          return;
+
+        }
+
+
+        addActivityMarker(
+          item,
+          day,
+          bounds
+        );
+
+
+        const lat =
+          Number(
+            item.location.lat
+          );
+
+        const lng =
+          Number(
+            item.location.lng
+          );
+
+
+        if (
+          !Number.isNaN(lat) &&
+          !Number.isNaN(lng)
+        ) {
+
+          dayCoordinates.push(
+            [lat, lng]
+          );
+
+        }
+
+      });
+
+
+    drawDayLine(
+      day,
+      dayCoordinates
+    );
 
   });
 
 
-  if (coordinates.length > 0) {
+  /* -------------------------------------------------------
+     CAMPINGS
+  ------------------------------------------------------- */
 
-    map.fitBounds(
-      coordinates,
-      {
-        padding: [60, 60],
-        maxZoom: 11
+  if (
+    typeof campsites !== "undefined"
+  ) {
+
+    campsites.forEach(
+      campsite => {
+
+        addCampsiteMarker(
+          campsite,
+          bounds
+        );
+
       }
+    );
+
+  }
+
+
+  /* -------------------------------------------------------
+     SUPERMERCADOS
+  ------------------------------------------------------- */
+
+  if (
+    typeof supermarkets !== "undefined"
+  ) {
+
+    supermarkets.forEach(
+      supermarket => {
+
+        addSupermarketMarker(
+          supermarket,
+          bounds
+        );
+
+      }
+    );
+
+  }
+
+
+  fitMapToBounds(bounds);
+
+
+  console.log(
+    "🌍 Mostrando TODO"
+  );
+
+}
+
+
+/* =========================================================
+   ALIAS PARA APP.JS
+
+   app.js llama drawAllRoutes() cuando pulsamos
+   la pestaña MAPA.
+
+   Ahora queremos que TODO incluya también
+   campings y supermercados.
+========================================================= */
+
+function drawAllRoutes() {
+
+  drawEverything();
+
+}
+
+
+/* =========================================================
+   FILTROS DEL MAPA
+========================================================= */
+
+const mapFilterContainer =
+  document.querySelector(
+    ".map-filters"
+  );
+
+
+/* =========================================================
+   CREAR FILTROS AUTOMÁTICAMENTE
+
+   Esto evita tener que escribir a mano en index.html:
+
+   TODO
+   DÍA 1
+   DÍA 2
+   ...
+========================================================= */
+
+function buildMapFilters() {
+
+  if (!mapFilterContainer) {
+
+    console.warn(
+      "⚠️ No existe .map-filters en index.html"
+    );
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     TODO
+  ------------------------------------------------------- */
+
+  let filtersHTML = `
+
+    <button
+      type="button"
+      class="map-filter active"
+      data-map-filter="all"
+    >
+      TODO
+    </button>
+
+  `;
+
+
+  /* -------------------------------------------------------
+     DÍAS
+  ------------------------------------------------------- */
+
+  tripDays.forEach(day => {
+
+    filtersHTML += `
+
+      <button
+        type="button"
+        class="map-filter"
+        data-map-filter="${day.id}"
+      >
+        DÍA ${day.id}
+      </button>
+
+    `;
+
+  });
+
+
+  /* -------------------------------------------------------
+     CAMPINGS
+  ------------------------------------------------------- */
+
+  filtersHTML += `
+
+    <button
+      type="button"
+      class="map-filter"
+      data-map-filter="campings"
+    >
+      ⛺ CAMPINGS
+    </button>
+
+  `;
+
+
+  /* -------------------------------------------------------
+     SUPERMERCADOS
+  ------------------------------------------------------- */
+
+  filtersHTML += `
+
+    <button
+      type="button"
+      class="map-filter"
+      data-map-filter="supermarkets"
+    >
+      🛒 SUPERMERCADOS
+    </button>
+
+  `;
+
+
+  mapFilterContainer.innerHTML =
+    filtersHTML;
+
+}
+
+
+/* =========================================================
+   CAMBIAR FILTRO ACTIVO
+========================================================= */
+
+function setActiveMapFilter(
+  selectedButton
+) {
+
+  const filterButtons =
+    document.querySelectorAll(
+      ".map-filter"
+    );
+
+
+  filterButtons.forEach(button => {
+
+    button.classList.remove(
+      "active"
+    );
+
+  });
+
+
+  if (selectedButton) {
+
+    selectedButton.classList.add(
+      "active"
     );
 
   }
@@ -418,117 +1604,250 @@ function drawSupermarkets() {
 
 
 /* =========================================================
-   EVENTOS DE LOS FILTROS
-
-   TODO
-   DÍA 1
-   DÍA 2
-   ...
-   CAMPINGS
-   SUPERMERCADOS
+   RESPONDER A CLIC EN FILTRO
 ========================================================= */
 
-mapFilterButtons.forEach(button => {
+function handleMapFilterClick(event) {
 
-  button.addEventListener("click", () => {
-
-    /* -----------------------------------------------------
-       CAMBIAR FILTRO ACTIVO
-    ----------------------------------------------------- */
-
-    mapFilterButtons.forEach(filterButton => {
-      filterButton.classList.remove("active");
-    });
+  const button =
+    event.target.closest(
+      ".map-filter"
+    );
 
 
-    button.classList.add("active");
+  if (!button) {
+
+    return;
+
+  }
 
 
-    /* Valor de data-map-filter */
-    const filter =
-      button.dataset.mapFilter;
+  const filter =
+    button.dataset.mapFilter;
 
 
-    /* -----------------------------------------------------
-       TODO
-    ----------------------------------------------------- */
+  if (!filter) {
 
-    if (filter === "all") {
+    return;
 
-      drawAllRoutes();
-
-      return;
-    }
+  }
 
 
-    /* -----------------------------------------------------
-       CAMPINGS
-    ----------------------------------------------------- */
-
-    if (filter === "campings") {
-
-      drawCampings();
-
-      return;
-    }
+  setActiveMapFilter(
+    button
+  );
 
 
-    /* -----------------------------------------------------
-       SUPERMERCADOS
-    ----------------------------------------------------- */
+  /* -------------------------------------------------------
+     TODO
+  ------------------------------------------------------- */
 
-    if (filter === "supermarkets") {
+  if (
+    filter === "all"
+  ) {
 
-      drawSupermarkets();
+    drawEverything();
 
-      return;
-    }
+    return;
+
+  }
 
 
-    /* -----------------------------------------------------
-       DÍAS
-    ----------------------------------------------------- */
+  /* -------------------------------------------------------
+     CAMPINGS
+  ------------------------------------------------------- */
 
-    /*
-      "1" → 1
-      "2" → 2
-      etc.
-    */
-    const dayId =
-      Number(filter);
+  if (
+    filter === "campings"
+  ) {
 
+    drawCampings();
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     SUPERMERCADOS
+  ------------------------------------------------------- */
+
+  if (
+    filter === "supermarkets"
+  ) {
+
+    drawSupermarkets();
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     DÍA CONCRETO
+  ------------------------------------------------------- */
+
+  const dayId =
+    Number(filter);
+
+
+  if (
+    !Number.isNaN(dayId)
+  ) {
 
     const selectedDay =
-      tripDays.find(
-        day => day.id === dayId
+      tripDays.find(day =>
+        day.id === dayId
       );
 
 
     if (selectedDay) {
 
-      drawDayRoute(selectedDay);
+      drawDayRoute(
+        selectedDay
+      );
 
     }
 
-  });
+  }
 
-});
-
-
-/* =========================================================
-   MAPA INICIAL
-
-   Cuando se carga la web, dejamos preparado
-   el mapa con todo el viaje.
-
-   Aunque al principio esté oculto.
-========================================================= */
-
-drawAllRoutes();
+}
 
 
 /* =========================================================
-   COMPROBACIÓN
+   ACTIVAR EVENTOS DE FILTROS
 ========================================================= */
 
-console.log("✅ map.js cargado correctamente");
+function initialiseMapFilters() {
+
+  buildMapFilters();
+
+
+  if (!mapFilterContainer) {
+
+    return;
+
+  }
+
+
+  mapFilterContainer.addEventListener(
+    "click",
+    handleMapFilterClick
+  );
+
+}
+
+
+/* =========================================================
+   REDIMENSIONAR MAPA
+
+   Leaflet a veces necesita recalcular su tamaño
+   cuando su contenedor estaba oculto.
+========================================================= */
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    if (
+      typeof map !== "undefined"
+    ) {
+
+      map.invalidateSize();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   COMPROBACIONES
+========================================================= */
+
+function validateMapData() {
+
+  if (
+    typeof tripDays === "undefined"
+  ) {
+
+    console.error(
+      "❌ tripDays no está disponible para map.js."
+    );
+
+    return false;
+
+  }
+
+
+  if (
+    typeof campsites === "undefined"
+  ) {
+
+    console.warn(
+      "⚠️ campsites no está disponible. Revisa places.js."
+    );
+
+  }
+
+
+  if (
+    typeof supermarkets === "undefined"
+  ) {
+
+    console.warn(
+      "⚠️ supermarkets no está disponible. Revisa places.js."
+    );
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   INICIALIZAR MAPA
+========================================================= */
+
+function initialiseMap() {
+
+  const valid =
+    validateMapData();
+
+
+  if (!valid) {
+
+    return;
+
+  }
+
+
+  /* Crear botones */
+  initialiseMapFilters();
+
+
+  /* Dibujar todo inicialmente */
+  drawEverything();
+
+
+  /*
+    El mapa normalmente estará oculto al cargar la web
+    porque empezamos viendo el Día 1.
+
+    Cuando app.js lo muestre llamará invalidateSize().
+  */
+
+  console.log(
+    "🗺️ Mapa de Islandia inicializado."
+  );
+
+}
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+initialiseMap();
